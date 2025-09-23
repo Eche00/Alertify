@@ -36,6 +36,8 @@ export default function BTCComparison() {
         `https://api.redstone.finance/prices?symbols=${BTC.coin}`
       );
       const redstoneData = await redstoneRes.json();
+      const redstoneValue =
+        redstoneData && redstoneData[BTC.coin] ? redstoneData[BTC.coin].value : undefined;
 
       // Pyth
       const pythRes = await fetch(
@@ -44,7 +46,7 @@ export default function BTCComparison() {
       const pythData = await pythRes.json();
       const pythParsed = pythData.parsed?.[0];
       const pythPrice =
-        pythParsed?.price?.price && pythParsed?.price?.expo !== undefined
+        pythParsed?.price?.price !== undefined && pythParsed?.price?.expo !== undefined
           ? Number(pythParsed.price.price) * Math.pow(10, pythParsed.price.expo)
           : undefined;
 
@@ -53,12 +55,13 @@ export default function BTCComparison() {
         `https://api.coingecko.com/api/v3/simple/price?ids=${BTC.coingeckoId}&vs_currencies=usd`
       );
       const chainlinkData = await chainlinkRes.json();
+      const chainlinkValue = chainlinkData[BTC.coingeckoId]?.usd;
 
       setPrices({
         coin: BTC.coin,
-        redstone: redstoneData[BTC.coin]?.value,
+        redstone: redstoneValue,
         pyth: pythPrice,
-        chainlink: chainlinkData[BTC.coingeckoId]?.usd,
+        chainlink: chainlinkValue,
       });
     } catch (err) {
       console.error("Error fetching BTC prices:", err);
@@ -69,12 +72,16 @@ export default function BTCComparison() {
 
   useEffect(() => {
     fetchBTCPrices();
+
+    // Auto-refresh every 1 minute
+    const interval = setInterval(fetchBTCPrices, 60000);
+    return () => clearInterval(interval);
   }, []);
 
   const chartData = [
-    { name: "Chainlink", price: prices?.chainlink },
-    { name: "Pyth", price: prices?.pyth },
-    { name: "RedStone", price: prices?.redstone },
+    { name: "Chainlink", price: prices?.chainlink ?? 0 },
+    { name: "Pyth", price: prices?.pyth ?? 0 },
+    { name: "RedStone", price: prices?.redstone ?? 0 },
   ];
 
   return (
@@ -88,7 +95,9 @@ export default function BTCComparison() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="shadow-lg rounded-2xl p-4">
               <h2 className="font-semibold">Chainlink</h2>
-              <p className="text-xl">${prices.chainlink?.toLocaleString() ?? "—"}</p>
+              <p className="text-xl">
+                ${prices.chainlink?.toLocaleString() ?? "—"}
+              </p>
             </div>
             <div className="shadow-lg rounded-2xl p-4">
               <h2 className="font-semibold">Pyth</h2>
