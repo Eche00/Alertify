@@ -21,7 +21,7 @@ export function useTopCoins() {
     fetchTopCoins();
 
     // Fetch every 5 seconds
-    const interval = setInterval(fetchTopCoins, 5000);
+    const interval = setInterval(fetchTopCoins, 60000);
 
     // Cleanup on unmount
     return () => clearInterval(interval);
