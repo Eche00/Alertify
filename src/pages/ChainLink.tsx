@@ -1,5 +1,5 @@
 "use client";
-import { NotificationAdd } from "@mui/icons-material";
+import { NotificationAdd, Refresh } from "@mui/icons-material";
 import Loader from "../components/Loader";
 import { useChainlinkFeeds } from "../utils/oracles";
 import { useEffect } from "react";
@@ -8,7 +8,7 @@ interface ChainLinkProps {
   onFeedsUpdate?: (feeds: any[]) => void;
 }
 export default function ChainlinkPage({ onFeedsUpdate }: ChainLinkProps) {
-  const { data, loading } = useChainlinkFeeds();
+  const { data, loading,refetch } = useChainlinkFeeds();
 
   useEffect(() => {
     if (onFeedsUpdate) onFeedsUpdate(data);
@@ -16,7 +16,8 @@ export default function ChainlinkPage({ onFeedsUpdate }: ChainLinkProps) {
 
   return (
     <div className="w-full mt-10">
-      <h1 className="text-2xl font-bold mb-6">Chainlink (CoinGecko)</h1>
+      <h1 className="text-2xl font-bold mb-6 flex items-center justify-between">Chainlink (CoinGecko)  <button onClick={refetch} className="text-[#B71C1C] cursor-pointer hover:scale-105 transition-all duration-300"><Refresh fontSize="large"/></button>
+      </h1>
       {loading && <p className="text-center">Loading Chainlink feeds...</p>}
 
       <div className="overflow-x-auto">

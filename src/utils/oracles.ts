@@ -73,12 +73,6 @@ export function useChainlinkFeeds() {
   useEffect(() => {
     // Initial fetch
     fetchData();
-
-    // Set interval for real-time updates
-    const interval = setInterval(fetchData, 5000); // updates every 5 seconds
-
-    // Clear interval on unmount
-    return () => clearInterval(interval);
   }, []);
 
   return { data, loading, refetch: fetchData };
@@ -120,11 +114,6 @@ export function useRedstoneFeeds() {
     // Initial fetch
     fetchData();
 
-    // Real-time updates every 5 seconds
-    const interval = setInterval(fetchData, 5000);
-
-    // Cleanup interval on unmount
-    return () => clearInterval(interval);
   }, []);
 
   return { data, loading, refetch: fetchData };
@@ -163,12 +152,6 @@ export function usePythFeeds() {
   useEffect(() => {
     // Initial fetch
     fetchData();
-
-    // Real-time updates every 5 seconds
-    const interval = setInterval(fetchData, 5000);
-
-    // Cleanup on unmount
-    return () => clearInterval(interval);
   }, []);
 
   return { data, loading, refetch: fetchData };

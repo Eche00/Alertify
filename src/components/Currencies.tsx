@@ -7,7 +7,7 @@ function Currencies() {
 
   return (
       <div>
-        <h2 className="px-10 font-bold text-[20px]">Top 20 Coins by Market Cap</h2>
+        <h2 className="px-10 font-bold text-[16px]">Top 20 Coins by Market Cap</h2>
       <div className="xxl:w-fit w-full overflow-scroll">
         <section className=" w-fit  flex items-stretch gap-6 px-10 pt-3 p-10 xxl:border-3 dark:border-none border-blue-700 rounded-[10px] ">
           {topCoins.map((coin:any) => (

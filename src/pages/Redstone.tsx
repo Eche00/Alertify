@@ -1,6 +1,6 @@
 "use client";
 
-import { NotificationAdd } from "@mui/icons-material";
+import { NotificationAdd, Refresh } from "@mui/icons-material";
 import Loader from "../components/Loader";
 import { useRedstoneFeeds } from "../utils/oracles";
 import { useEffect } from "react";
@@ -9,14 +9,15 @@ interface ChainLinkProps {
   onFeedsUpdate?: (feeds: any[]) => void;
 }
 export default function RedstonePage({ onFeedsUpdate }: ChainLinkProps) {
-  const { data, loading } = useRedstoneFeeds();
+  const { data, loading,refetch } = useRedstoneFeeds();
 
   useEffect(() => {
     if (onFeedsUpdate) onFeedsUpdate(data);
   }, [data]);
   return (
     <div className="w-full mt-10">
-      <h1 className="text-2xl font-bold mb-6">RedStone Feeds</h1>
+      <h1 className="text-2xl font-bold mb-6 flex items-center justify-between">RedStone Feeds <button onClick={refetch} className="text-[#B71C1C] cursor-pointer hover:scale-105 transition-all duration-300"><Refresh fontSize="large"/></button>
+      </h1>
       {loading && <p className="text-center">Loading RedStone feeds...</p>}
 
       <div className="overflow-x-auto">
