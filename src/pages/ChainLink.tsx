@@ -20,7 +20,7 @@ export default function ChainlinkPage({ onFeedsUpdate }: ChainLinkProps) {
       {loading && <p className="text-center">Loading Chainlink feeds...</p>}
 
       <div className="overflow-x-auto">
-        <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden">
+        <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden text-nowrap">
           <thead className="bg-[#B71C1C] text-slate-100">
             <tr>
               <th className="p-3 border border-gray-300 text-left">Asset</th>

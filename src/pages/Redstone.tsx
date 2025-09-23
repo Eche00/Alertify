@@ -20,7 +20,7 @@ export default function RedstonePage({ onFeedsUpdate }: ChainLinkProps) {
       {loading && <p className="text-center">Loading RedStone feeds...</p>}
 
       <div className="overflow-x-auto">
-        <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden">
+        <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden text-nowra">
           <thead className="bg-[#B71C1C] text-slate-100">
             <tr>
               <th className="p-3 border border-gray-300 text-left">Asset</th>
