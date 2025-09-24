@@ -4,7 +4,7 @@ import ChainLink from "./ChainLink";
 import Redstone from "./Redstone";
 import Pyth from "./Pyth";
 
-export type OracleType = "Chainlink" | "RedStone" | "Pyth";
+export type OracleType = "RedStone" | "Chainlink" | "Pyth";
 
 interface TableProps {
   selectedOracle: OracleType;
@@ -30,7 +30,7 @@ function Table({ selectedOracle, setSelectedOracle, setSelectedFeeds }: TablePro
     <div className="mt-20 w-[90%] mx-auto">
       {/* Buttons */}
       <div className="flex items-center justify-between sm:gap-4 gap-2 mb-6 bg-white sm:w-fit w-full p-2 rounded-[10px] shadow-xl">
-        {(["Chainlink", "RedStone", "Pyth"] as OracleType[]).map((oracle) => (
+        {([ "RedStone", "Chainlink", "Pyth"] as OracleType[]).map((oracle) => (
           <button
             key={oracle}
             onClick={() => setSelectedOracle(oracle)}

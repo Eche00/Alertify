@@ -6,10 +6,10 @@ import Table from "./Table";
 
 
 
-type OracleType = "Chainlink" | "RedStone" | "Pyth";
+type OracleType = "RedStone" | "Chainlink" | "Pyth";
 
 function Home() {
-  const [selectedOracle, setSelectedOracle] = useState<OracleType>("Chainlink");
+  const [selectedOracle, setSelectedOracle] = useState<OracleType>("RedStone");
   const [selectedFeeds, setSelectedFeeds] = useState<any[]>([]);
 
   return (
