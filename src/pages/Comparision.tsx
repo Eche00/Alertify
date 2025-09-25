@@ -5,7 +5,7 @@ import {
   Check,
   CurrencyExchange,
 } from "@mui/icons-material";
-
+import '../styles/animate.css'
 // Define a generic Feed type
 interface Feed {
   asset: string;
@@ -31,8 +31,9 @@ function Comparision({ feeds }: ComparisonProps) {
       <section className="flex flex-1 flex-col bg-white rounded-2xl sm:min-h-[200px] min-h-[100px] relative w-full justify-between items-start p-5">
         <div className="flex flex-1 w-full gap-5 justify-between">
           <div>
-            <p className="text-sm text-gray-500 mb-1">Feeds</p>
             <h3 className="text-2xl font-bold text-[#B71C1C]">Total Feeds</h3>
+            <p className="text-sm text-gray-500 mb-1">Feeds</p>
+
           </div>
           <div className="bg-[#f5092016] w-[40px] h-[40px] flex items-center justify-center rounded-full">
             <span className="text-red-700 text-xl">
@@ -47,17 +48,18 @@ function Comparision({ feeds }: ComparisonProps) {
       <section className="flex flex-1 flex-col bg-[#B71C1C]/10 rounded-2xl sm:min-h-[200px] min-h-[100px] relative w-full justify-between items-start p-5">
         <div className="flex flex-1 w-full gap-5 justify-between">
           <div>
-            <p className="text-sm text-gray-800 mb-1">Healthy</p>
-            <h3 className="text-2xl font-bold text-[#B71C1C]">Healthy Feeds</h3>
+            <h3 className="text-2xl font-bold text-green-600">Healthy Feeds</h3>
             <p className="text-xs text-gray-800 mt-1">Total Healthy Feeds</p>
           </div>
-          <div className="bg-[#f5092134] w-[40px] h-[40px] flex items-center justify-center rounded-full">
-            <span className="text-white text-xl">
+          <div className="bg-green-700/20 w-[40px] h-[40px] flex items-center justify-center rounded-full relative">
+            <p className="text-green-700 text-xl flex items-center justify-center">
               <Check />
-            </span>
+            </p>
+            <span className="animate-blink text-green-700 text-4xl  w-fit h-fit absolute -top-1 right-2">.</span>
+            
           </div>
         </div>
-        <h3 className="text-2xl font-bold text-[#B71C1C]">{healthyFeeds}</h3>
+        <h3 className="text-2xl font-bold text-green-700">{healthyFeeds}</h3>
       </section>
 
       {/* Stale Feeds */}
@@ -74,6 +76,7 @@ function Comparision({ feeds }: ComparisonProps) {
           <div className="bg-[#f5092016] w-[40px] h-[40px] flex items-center justify-center rounded-full">
             <span className="text-white text-xl">
               <ChangeCircle />
+
             </span>
           </div>
         </div>

@@ -9,7 +9,7 @@ function Header() {
     <h1 className="text-2xl font-bold  flex items-center justify-between">{location.pathname === '/' ? "Dashboard": "Alert"}</h1>
 
           <div className="flex items-center gap-3">
-          <button className=" bg-red-700 px-[32px] text-white py-2 rounded-[8px]">Join</button>
+          <button className=" bg-red-700 px-[32px] text-white py-2 rounded-[8px] shadow-xl">Join</button>
           </div>
     </section>
     </div>
