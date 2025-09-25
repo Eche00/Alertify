@@ -1,17 +1,15 @@
+import { useLocation } from "react-router";
 
 function Header() {
+  const location = useLocation()
   return (
     <div className="w-full bg-[#FBFCFF]">
     {/* container  */}
-    <section className="sm:px-10 px-2 shadow-2xl py-3 flex items-center justify-between">
-    <input
-            type="text"
-            placeholder="Quantity"
-            className=" rounded-2xl border border-gray-400  py-3 sm:px-[32px] px-[10px] w-fit  text-black outline-none placeholder:text-gray-400 "
-          />
+    <section className="sm:px-10 px-2 py-6 shadow-2xl flex items-center justify-between">
+    <h1 className="text-2xl font-bold  flex items-center justify-between">{location.pathname === '/' ? "Dashboard": "Alert"}</h1>
 
           <div className="flex items-center gap-3">
-          <p>EN</p><p>EN</p>
+          <button className=" bg-red-700 px-[32px] text-white py-2 rounded-[8px]">Join</button>
           </div>
     </section>
     </div>
