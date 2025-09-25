@@ -36,17 +36,25 @@ export default function RedstonePage({ onFeedsUpdate }: ChainLinkProps) {
     }
   }, [data]);
 
+  const lastUpdated = withChange.length > 0 
+  ? withChange[withChange.length - 1].updated 
+  : null;
+
   return (
     <div className="w-full mt-10">
-      <h1 className="text-2xl font-bold mb-6 flex items-center justify-between">
-        RedStone Feeds{" "}
-        <button
+      <h1 className="text-2xl font-bold mb-6 flex items-start justify-between">
+        RedStone{" "}
+       
+       <div className="flex flex-col items-end justify-end gap-2">
+       <button
           onClick={refetch}
           className="bg-[#B71C1C] disabled:cursor-not-allowed flex items-center justify-center gap-2 text-white py-2 px-[16px] text-[12px] rounded-[8px] cursor-pointer hover:scale-105 transition-all duration-300"
           disabled={loading}
         >
           <Refresh fontSize="medium" /> Refresh
         </button>
+        <p className="text-center text-[16px] font-light">Last updated: {lastUpdated}</p>
+       </div>
       </h1>
       {loading && <p className="text-center">Loading RedStone feeds...</p>}
 

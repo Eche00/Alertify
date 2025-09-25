@@ -21,9 +21,10 @@ export interface RedstoneFeed {
 
 export interface PythFeed {
   asset: string;
-  oracle: "Pyth";
+  oracle: string;
   status: string;
-  updated: string | number;
+  price: any;
+  updated: string;
 }
 
 //  APIs 
@@ -33,6 +34,12 @@ const COINS = [
   "shiba-inu", "avalanche-2", "chainlink", "stellar", "tron",
   "vechain", "filecoin", "cosmos", "algorand", "internet-computer"
 ];
+const symbols = [
+  "9022", "GOOGL", "CAT", "1378-HK", "CTRA", "VXX", "HOOD",
+  "5214", "ANIME", "DMH6", "EZJ", "PEG", "THL", "REX33",
+  "XEC", "XDC", "GEHC", "NEAR", "DMC", "SYRUPUSDT"
+];
+
 const COINGECKO_API = "https://api.coingecko.com/api/v3/simple/price";
 const REDSTONE_API = "https://api.redstone.finance/prices";
 const REDSTONE_SYMBOLS = [
@@ -120,6 +127,7 @@ export function useRedstoneFeeds() {
 }
 
 //  Pyth Hook 
+
 export function usePythFeeds() {
   const [data, setData] = useState<PythFeed[]>([]);
   const [loading, setLoading] = useState(false);
@@ -127,18 +135,45 @@ export function usePythFeeds() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch(PYTH_API);
-      const result = await res.json();
+      // 1. Get all feeds
+      const feedsRes = await fetch(PYTH_API);
+      const feeds = await feedsRes.json();
 
-      const formatted: PythFeed[] = (result.slice(0, 20) || []).map(
-        (item: any) => ({
-          asset: item.attributes?.base || item.id,
+      // 2. Filter for your selected symbols
+      const selected = feeds.filter((f: any) =>
+        symbols.includes(f.attributes?.base) ||
+        symbols.includes(f.attributes?.display_symbol?.split("/")?.[0])
+      );
+
+      if (selected.length === 0) {
+        setData([]);
+        return;
+      }
+
+      // 3. Fetch latest prices for those IDs
+      const query = selected.map((f: any) => `ids[]=${f.id}`).join("&");
+      const pricesRes = await fetch(`https://hermes.pyth.network/v2/updates/price/latest?${query}`);
+      const prices = await pricesRes.json();
+
+      // 4. Merge metadata + prices
+      const formatted: PythFeed[] = prices.parsed.map((p: any) => {
+        const feed = selected.find((f: any) => f.id === p.id);
+        const asset = feed?.attributes?.base || p.id;
+
+        const rawPrice = Number(p.price.price);
+        const expo = Number(p.price.expo);
+        const realPrice = rawPrice * Math.pow(10, expo); // Apply exponent
+
+        return {
+          asset,
           oracle: "Pyth",
           status: "Active",
-          price: item.attributes?.price?.price || "N/A",
-          updated: new Date(item.attributes?.price?.publish_time * 1000).toLocaleTimeString() || "N/A",
-        })
-      );
+          price: realPrice.toFixed(6), // e.g. 24.965933
+          updated: new Date(p.price.publish_time * 1000).toLocaleTimeString("en-GB", {
+            hour12: false
+          }),
+        };
+      });
 
       setData(formatted);
     } catch (err) {
@@ -150,9 +185,11 @@ export function usePythFeeds() {
   };
 
   useEffect(() => {
-    // Initial fetch
     fetchData();
   }, []);
 
   return { data, loading, refetch: fetchData };
 }
+
+
+

@@ -3,7 +3,7 @@
 import { NotificationAdd, Refresh } from "@mui/icons-material";
 import Loader from "../components/Loader";
 import { usePythFeeds } from "../utils/oracles";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ChainLinkProps {
   onFeedsUpdate?: (feeds: any[]) => void;
@@ -11,16 +11,30 @@ interface ChainLinkProps {
 
 export default function PythPage({ onFeedsUpdate }: ChainLinkProps) {
   const { data, loading, refetch } = usePythFeeds();
+  const prevDataRef = useRef<any[]>([]);
+  const [withChange, setWithChange] = useState<any[]>([]);
 
   useEffect(() => {
-    if (onFeedsUpdate) onFeedsUpdate(data);
-  }, [data]);
+    if (data.length > 0) {
+      const updated = data.map((item) => {
+        const prev = prevDataRef.current.find((d) => d.asset === item.asset);
+        const change = prev ? item.price - prev.price : 0;
+        const prevColor = prev?.color || "text-green-600 font-semibold";
 
-  // Helper to normalize Pyth price
-  const formatPrice = (price: any, expo: any) => {
-    if (typeof price !== "number" || typeof expo !== "number") return "N/A";
-    return price * Math.pow(10, expo);
-  };
+        // ✅ Decide color
+        let color = prevColor;
+        if (change > 0) color = "text-green-600 font-semibold";
+        else if (change < 0) color = "text-red-600 font-semibold";
+
+        return { ...item, change, color };
+      });
+
+      prevDataRef.current = updated; // save for next comparison
+      setWithChange(updated);
+
+      if (onFeedsUpdate) onFeedsUpdate(updated);
+    }
+  }, [data]);
 
   return (
     <div className="w-full mt-10">
@@ -34,6 +48,7 @@ export default function PythPage({ onFeedsUpdate }: ChainLinkProps) {
           <Refresh fontSize="medium" /> Refresh
         </button>
       </h1>
+
       {loading && <p className="text-center">Loading Pyth feeds...</p>}
 
       <div className="overflow-x-auto">
@@ -51,8 +66,8 @@ export default function PythPage({ onFeedsUpdate }: ChainLinkProps) {
             </tr>
           </thead>
           <tbody>
-            {data.length > 0 ? (
-              data.map((item: any, index: number) => (
+            {withChange.length > 0 ? (
+              withChange.map((item, index) => (
                 <tr
                   key={index}
                   className="hover:bg-[#B71C1C]/20 text-gray-800"
@@ -62,11 +77,11 @@ export default function PythPage({ onFeedsUpdate }: ChainLinkProps) {
                     {item.oracle}
                   </td>
 
-                  {/* ✅ Price Column */}
-                  <td className="p-3 border border-gray-300 text-center">
-                    {item.price && item.expo !== undefined
-                      ? `$${formatPrice(item.price, item.expo).toLocaleString()}`
-                      : "N/A"}
+                  {/* ✅ Price with color change */}
+                  <td
+                    className={`p-3 border border-gray-300 text-center ${item.color}`}
+                  >
+                    {item.price !== "N/A" ? `$${item.price}` : "N/A"}
                   </td>
 
                   <td className="p-3 border border-gray-300 text-center">
