@@ -50,9 +50,10 @@ export default function ChainlinkPage({ onFeedsUpdate }: ChainLinkProps) {
         Chainlink (CoinGecko)
         <button
           onClick={refetch}
-          className="text-[#B71C1C] cursor-pointer hover:scale-105 transition-all duration-300"
+          className="bg-[#B71C1C] disabled:cursor-not-allowed flex items-center justify-center gap-2 text-white py-2 px-[16px] text-[12px] rounded-[8px] cursor-pointer hover:scale-105 transition-all duration-300"
+          disabled={loading}
         >
-          <Refresh fontSize="large" />
+          <Refresh fontSize="medium" /> Refresh
         </button>
       </h1>
       {loading && <p className="text-center">Loading Chainlink feeds...</p>}

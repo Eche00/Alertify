@@ -1,11 +1,8 @@
 "use client";
 
-import {
-  ChangeCircle,
-  Check,
-  CurrencyExchange,
-} from "@mui/icons-material";
-import '../styles/animate.css'
+import { ChangeCircle, Check, CurrencyExchange } from "@mui/icons-material";
+import "../styles/animate.css";
+
 // Define a generic Feed type
 interface Feed {
   asset: string;
@@ -13,6 +10,7 @@ interface Feed {
   status: string; // "Active", "Stale", etc.
   price?: number;
   updated?: string | number;
+  color?: string; // <-- comes from RedstonePage (green or red)
 }
 
 interface ComparisonProps {
@@ -22,8 +20,14 @@ interface ComparisonProps {
 function Comparision({ feeds }: ComparisonProps) {
   // Compute feed counts
   const totalFeeds = feeds.length;
-  const healthyFeeds = feeds.filter((f) => f.status === "Active").length;
-  const deviatedFeeds = feeds.filter((f) => f.status === "Deviated").length;
+
+  // Count based on color
+  const healthyFeeds = feeds.filter((f) =>
+    f.color?.includes("text-green")
+  ).length;
+  const deviatedFeeds = feeds.filter((f) =>
+    f.color?.includes("text-red")
+  ).length;
 
   return (
     <div className="bg-white flex items-center lg:flex-row flex-col gap-5 shadow-lg w-[90%] mx-auto sm:p-10 p-5 relative rounded-[18px]">
@@ -33,7 +37,6 @@ function Comparision({ feeds }: ComparisonProps) {
           <div>
             <h3 className="text-2xl font-bold text-[#B71C1C]">Total Feeds</h3>
             <p className="text-sm text-gray-500 mb-1">Feeds</p>
-
           </div>
           <div className="bg-[#f5092016] w-[40px] h-[40px] flex items-center justify-center rounded-full">
             <span className="text-red-700 text-xl">
@@ -55,28 +58,24 @@ function Comparision({ feeds }: ComparisonProps) {
             <p className="text-green-700 text-xl flex items-center justify-center">
               <Check />
             </p>
-            <span className="animate-blink text-green-700 text-4xl  w-fit h-fit absolute -top-1 right-2">.</span>
-            
+            <span className="animate-blink text-green-700 text-4xl w-fit h-fit absolute -top-1 right-2">
+              .
+            </span>
           </div>
         </div>
         <h3 className="text-2xl font-bold text-green-700">{healthyFeeds}</h3>
       </section>
 
-      {/* Stale Feeds */}
-     
-
       {/* Deviated Feeds */}
       <section className="flex flex-1 flex-col bg-[#B71C1C] rounded-2xl sm:min-h-[200px] min-h-[100px] relative w-full justify-between items-start p-5">
         <div className="flex flex-1 w-full gap-5 justify-between">
           <div>
-            <p className="text-sm text-gray-200 mb-1">Deviations</p>
             <h3 className="text-2xl font-bold text-white">Deviated Feeds</h3>
             <p className="text-xs text-gray-200 mt-1">Total Deviated Feeds</p>
           </div>
           <div className="bg-[#f5092016] w-[40px] h-[40px] flex items-center justify-center rounded-full">
             <span className="text-white text-xl">
               <ChangeCircle />
-
             </span>
           </div>
         </div>
