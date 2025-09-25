@@ -32,7 +32,16 @@ const COINS = [
   "bitcoin", "ethereum", "solana", "litecoin", "cardano",
   "polkadot", "binancecoin", "ripple", "matic-network", "dogecoin",
   "shiba-inu", "avalanche-2", "chainlink", "stellar", "tron",
-  "vechain", "filecoin", "cosmos", "algorand", "internet-computer"
+  "vechain", "filecoin", "cosmos", "algorand", "internet-computer", "aptos",
+  "arbitrum",
+  "optimism",
+  "sui",
+  "hedera-hashgraph",
+  "the-graph",
+  "aave",
+  "synthetix-network-token",
+  "pancakeswap-token",
+  "uniswap"
 ];
 const symbols = [
   "9022", "GOOGL", "CAT", "1378-HK", "CTRA", "VXX", "HOOD",
@@ -43,9 +52,27 @@ const symbols = [
 const COINGECKO_API = "https://api.coingecko.com/api/v3/simple/price";
 const REDSTONE_API = "https://api.redstone.finance/prices";
 const REDSTONE_SYMBOLS = [
-  "ETH", "BTC", "SOL", "LINK", "ADA", "DOT", "BNB", "XRP", "MATIC", "LTC",
-  "DOGE", "UNI", "AVAX", "ATOM", "FIL", "ALGO", "TRX", "FTM", "NEAR", "ICP"
+  "ETH",
+  "BTC",
+  "SOL",
+  "LINK",
+  "ADA",
+  "BNB",
+  "XRP",
+  "DOGE",
+  "UNI",
+  "AVAX",
+  "ATOM",
+  "TRX",
+  "ARB",
+  "SUI",
+  "OP",
+  "AAVE",
+  "CRV",
+
 ].join(",");
+
+
 const PYTH_API = "https://hermes.pyth.network/v2/price_feeds";
 
 //  Chainlink Hook 

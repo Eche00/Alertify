@@ -17,33 +17,29 @@ export default function ChainlinkPage({ onFeedsUpdate }: ChainLinkProps) {
     if (data.length > 0) {
       const updated = data.map((item) => {
         const prev = prevDataRef.current.find((d) => d.asset === item.asset);
-
-        // Ensure prices are numbers
+  
         const currentPrice =
           typeof item.price === "number" ? item.price : parseFloat(item.price);
-        const prevPrice =
-          prev && typeof prev.price === "number"
-            ? prev.price
-            : parseFloat(prev?.price ?? "0");
-
-        const change = prev ? currentPrice - prevPrice : 0;
-        const prevColor = prev?.color || "text-green-600 font-semibold";
-
-        // Decide color
-        let color = prevColor;
+  
+        const prevPrice = prev?.price ?? currentPrice;
+        const change = currentPrice - prevPrice;
+  
+        // Keep previous color if no change, otherwise green/red
+        let color = prev?.color || "text-green-600 font-semibold";
         if (change > 0) color = "text-green-600 font-semibold";
         else if (change < 0) color = "text-red-600 font-semibold";
-
+  
         return { ...item, price: currentPrice, change, color };
       });
-
-      prevDataRef.current = updated; // save current as prev for next run
+  
+      prevDataRef.current = updated; // save for next comparison
       setWithChange(updated);
-
+  
       if (onFeedsUpdate) onFeedsUpdate(updated);
     }
   }, [data]);
-
+  
+  
   const lastUpdated = withChange.length > 0 
   ? withChange[withChange.length - 1].updated 
   : null;
