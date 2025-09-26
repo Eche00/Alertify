@@ -11,24 +11,9 @@ function AlertModal({ setModal, asset }: AlertProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [alertType, setAlertType] = useState("Price Above");
   const [threshold, setThreshold] = useState<number | "">("");
-  const [notifyMethods, setNotifyMethods] = useState({
-    email: true,
-    telegram: false,
-    discord: false,
-  });
-
   const [contacts, setContacts] = useState({
     email: "",
-    telegram: "",
-    discord: "",
   });
-
-  const handleCheckboxChange = (method: string) => {
-    setNotifyMethods((prev) => ({
-      ...prev,
-      [method]: !prev[method as keyof typeof prev],
-    }));
-  };
 
   const handleContactChange = (field: string, value: string) => {
     setContacts((prev) => ({
@@ -50,9 +35,7 @@ function AlertModal({ setModal, asset }: AlertProps) {
       Number(threshold),
       alertType,
       {
-        email: notifyMethods.email ? contacts.email : null,
-        telegram: notifyMethods.telegram ? contacts.telegram : null,
-        discord: notifyMethods.discord ? contacts.discord : null,
+        email: contacts.email || null, // direct check, no notifyMethods
       }
     );
     setLoading(false);
@@ -105,87 +88,27 @@ function AlertModal({ setModal, asset }: AlertProps) {
         {/* Notification Methods */}
         <div className="mb-6">
           <p className="text-sm text-gray-600 mb-2">Notification Methods</p>
-          <div className="flex flex-col gap-2">
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={notifyMethods.email}
-                onChange={() => handleCheckboxChange("email")}
-                className="accent-[#B71C1C]"
-              />
-              Email
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={notifyMethods.telegram}
-                onChange={() => handleCheckboxChange("telegram")}
-                className="accent-[#B71C1C]"
-              />
-              Telegram
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={notifyMethods.discord}
-                onChange={() => handleCheckboxChange("discord")}
-                className="accent-[#B71C1C]"
-              />
-              Discord
-            </label>
-          </div>
+          <p className="text-sm text-gray-900 mb-1 font-bold">Email</p>
         </div>
 
-        {/* Conditional Contact Inputs */}
-        {(notifyMethods.email || notifyMethods.telegram || notifyMethods.discord) && (
-          <div className="mb-6 flex flex-col gap-4">
-            {notifyMethods.email && (
-              <div>
-                <label className="text-sm text-gray-600 mb-1">Email Address</label>
-                <input
-                  type="email"
-                  value={contacts.email}
-                  onChange={(e) => handleContactChange("email", e.target.value)}
-                  placeholder="Enter your email"
-                  className="border border-gray-400 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#B71C1C]"
-                />
-              </div>
-            )}
-            {notifyMethods.telegram && (
-              <div>
-                <label className="text-sm text-gray-600 mb-1">Telegram Username</label>
-                <input
-                  type="text"
-                  value={contacts.telegram}
-                  onChange={(e) =>
-                    handleContactChange("telegram", e.target.value)
-                  }
-                  placeholder="Enter your Telegram username"
-                  className="border border-gray-400 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#B71C1C]"
-                />
-              </div>
-            )}
-            {notifyMethods.discord && (
-              <div>
-                <label className="text-sm text-gray-600 mb-1">Discord Username</label>
-                <input
-                  type="text"
-                  value={contacts.discord}
-                  onChange={(e) =>
-                    handleContactChange("discord", e.target.value)
-                  }
-                  placeholder="Enter your Discord username"
-                  className="border border-gray-400 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#B71C1C]"
-                />
-              </div>
-            )}
+        {/* Conditional Contact Input */}
+        <div className="mb-6 flex flex-col gap-4">
+          <div>
+            <label className="text-sm text-gray-600 mb-1">Email Address</label>
+            <input
+              type="email"
+              value={contacts.email}
+              onChange={(e) => handleContactChange("email", e.target.value)}
+              placeholder="Enter your email"
+              className="border border-gray-400 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#B71C1C]"
+            />
           </div>
-        )}
+        </div>
 
         {/* Buttons */}
         <div className="flex justify-end gap-3">
           <button
-            className="px-4 py-2 rounded-lg border border-gray-400 text-gray-600 hover:bg-gray-100"
+            className="px-4 py-2 rounded-lg border border-gray-400 text-gray-600 hover:bg-gray-100 cursor-pointer"
             onClick={() => setModal(false)}
             disabled={loading}
           >
@@ -196,7 +119,7 @@ function AlertModal({ setModal, asset }: AlertProps) {
             disabled={loading}
             className={`px-4 py-2 rounded-lg text-white hover:scale-105 ${
               loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#B71C1C]"
-            }`}
+            } cursor-pointer`}
           >
             {loading ? "Creating..." : "Create Alert"}
           </button>

@@ -3,8 +3,6 @@ import { db } from "../lib/firebase";
 
 interface NotifyMethods {
   email: string | null;
-  telegram: string | null;
-  discord: string | null;
 }
 
 export const createAlert = async (
