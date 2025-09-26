@@ -2,11 +2,14 @@ import { BrowserRouter as  Router, Routes,Route } from "react-router";
 import Container from "./components/Container";
 import Home from "./pages/Home";
 import Alert from "./pages/Alert";
+import { Toaster } from "react-hot-toast";
 
 
 function App() {
   return (
     <div className=" overflow-hidden">
+      <Toaster position="top-right" reverseOrder={false} />
+
       <Router>
 
         <Routes>

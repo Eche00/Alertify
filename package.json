@@ -16,10 +16,13 @@
     "@mui/material": "^7.3.2",
     "@tailwindcss/vite": "^4.1.13",
     "ethers": "^6.15.0",
+    "firebase": "^12.3.0",
     "framer-motion": "^12.23.15",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.9.1",
+    "react-toastify": "^11.0.5",
     "recharts": "^3.2.1",
     "redstone-api": "^0.4.13",
     "tailwindcss": "^4.1.13"
