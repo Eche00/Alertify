@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeCircle, Check, CurrencyExchange } from "@mui/icons-material";
+import { ChangeCircle, Check, Circle, CurrencyExchange } from "@mui/icons-material";
 import "../styles/animate.css";
 
 // Define a generic Feed type
@@ -51,19 +51,17 @@ function Comparision({ feeds }: ComparisonProps) {
       <section className="flex flex-1 flex-col bg-[#B71C1C]/10 rounded-2xl sm:min-h-[200px] min-h-[100px] relative w-full justify-between items-start p-5">
         <div className="flex flex-1 w-full gap-5 justify-between">
           <div>
-            <h3 className="text-2xl font-bold text-green-600">Healthy Feeds</h3>
+          <h3 className="text-2xl font-bold text-[#B71C1C]">Healthy Feeds</h3>
             <p className="text-xs text-gray-800 mt-1">Total Healthy Feeds</p>
           </div>
           <div className="bg-green-700/20 w-[40px] h-[40px] flex items-center justify-center rounded-full relative">
-            <p className="text-green-700 text-xl flex items-center justify-center">
-              <Check />
+            <p className="text-green-600 text-xl flex items-center justify-center animate-blink">
+              <Circle />
             </p>
-            <span className="animate-blink text-green-700 text-4xl w-fit h-fit absolute -top-1 right-2">
-              .
-            </span>
+          
           </div>
         </div>
-        <h3 className="text-2xl font-bold text-green-700">{healthyFeeds}</h3>
+        <h3 className="text-2xl font-bold text-[#B71C1C]">{healthyFeeds}</h3>
       </section>
 
       {/* Deviated Feeds */}
