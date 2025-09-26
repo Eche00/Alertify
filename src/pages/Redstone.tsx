@@ -53,7 +53,7 @@ export default function RedstonePage({ onFeedsUpdate }: ChainLinkProps) {
         >
           <Refresh fontSize="medium" /> Refresh
         </button>
-        <p className="text-center text-[16px] font-light">Last updated: {lastUpdated}</p>
+        <p className="text-end text-[16px] font-light ">Last updated: <br className="sm:hidden block" /> {lastUpdated}</p>
        </div>
       </h1>
       {loading && <p className="text-center">Loading RedStone feeds...</p>}
