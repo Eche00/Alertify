@@ -4,12 +4,14 @@ import { NotificationAdd, Refresh } from "@mui/icons-material";
 import Loader from "../components/Loader";
 import { usePythFeeds } from "../utils/oracles";
 import { useEffect, useRef, useState } from "react";
+import AlertModal from "./AlertModal";
 
 interface ChainLinkProps {
   onFeedsUpdate?: (feeds: any[]) => void;
 }
 
 export default function PythPage({ onFeedsUpdate }: ChainLinkProps) {
+  const [modal,setModal] = useState<boolean>(false)
   const { data, loading, refetch } = usePythFeeds();
   const prevDataRef = useRef<any[]>([]);
   const [withChange, setWithChange] = useState<any[]>([]);
@@ -57,7 +59,7 @@ export default function PythPage({ onFeedsUpdate }: ChainLinkProps) {
             <tr>
               <th className="p-3 border border-gray-300 text-left">Asset</th>
               <th className="p-3 border border-gray-300 text-center">Oracle</th>
-              <th className="p-3 border border-gray-300 text-center">Price</th>
+              <th className="p-3 border border-gray-300 text-center">Price (USD)</th>
               <th className="p-3 border border-gray-300 text-center">Status</th>
               <th className="p-3 border border-gray-300 text-center">
                 Last Updated
@@ -91,7 +93,7 @@ export default function PythPage({ onFeedsUpdate }: ChainLinkProps) {
                     {item.updated}
                   </td>
                   <td className="p-3 border border-gray-300 flex items-end justify-end">
-                    <button className="px-3 py-1 border border-gray-500 hover:bg-gray-600 text-gray-500 hover:text-white rounded-md text-sm cursor-pointer transition-all duration-300 flex items-center gap-1">
+                    <button className="px-3 py-1 border border-gray-500 hover:bg-gray-600 text-gray-500 hover:text-white rounded-md text-sm cursor-pointer transition-all duration-300 flex items-center gap-1" onClick={()=>setModal(!modal)}>
                       <NotificationAdd /> Alert
                     </button>
                   </td>
@@ -107,6 +109,8 @@ export default function PythPage({ onFeedsUpdate }: ChainLinkProps) {
           </tbody>
         </table>
       </div>
+
+      {modal && <AlertModal setModal={setModal}/>}
     </div>
   );
 }
