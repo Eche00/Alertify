@@ -24,7 +24,7 @@ interface OraclePrices {
   redstone?: number;
 }
 
-export default function BTCComparison() {
+export default function BtcStats() {
   const [prices, setPrices] = useState<OraclePrices | null>(null);
   const [loading, setLoading] = useState(false);
 

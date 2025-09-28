@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Refresh } from "@mui/icons-material";
 
 interface NotifyMethods {
   email: string | null;

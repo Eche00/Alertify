@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeCircle, Check, Circle, CurrencyExchange } from "@mui/icons-material";
+import { ChangeCircle,  Circle, CurrencyExchange } from "@mui/icons-material";
 import "../styles/animate.css";
 
 // Define a generic Feed type
@@ -17,7 +17,7 @@ interface ComparisonProps {
   feeds: Feed[]; // pass in the feeds of the selected oracle
 }
 
-function Comparision({ feeds }: ComparisonProps) {
+function Stats({ feeds }: ComparisonProps) {
   // Compute feed counts
   const totalFeeds = feeds.length;
 
@@ -83,4 +83,4 @@ function Comparision({ feeds }: ComparisonProps) {
   );
 }
 
-export default Comparision;
+export default Stats;

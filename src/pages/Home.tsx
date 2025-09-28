@@ -1,8 +1,8 @@
 import { useState } from "react";
 import Currencies from "../components/Currencies";
-import Comparision from "./Comparision";
-import CurrencyComparison from "./CurrencyComparison";
+import Stats from "./Stats";
 import Table from "./Table";
+import BtcStats from "./BtcStats";
 
 
 
@@ -15,12 +15,12 @@ function Home() {
   return (
     <div className="py-[24px] sm:pr-[24px] bg-[#F4F6FE]  flex flex-col flex-1 w-full max-h-[100vh] overflow-scroll">
      <Currencies/>
-     <Comparision feeds={selectedFeeds}/> 
+     <Stats feeds={selectedFeeds}/> 
      <Table 
         selectedOracle={selectedOracle}
         setSelectedOracle={setSelectedOracle}
         setSelectedFeeds={setSelectedFeeds}/>
-     <CurrencyComparison/>
+     <BtcStats/>
     </div>
   );
 }
