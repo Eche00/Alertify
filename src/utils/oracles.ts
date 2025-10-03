@@ -44,10 +44,38 @@ const COINS = [
   "uniswap"
 ];
 const symbols = [
-  "9022", "GOOGL", "CAT", "1378-HK", "CTRA", "VXX", "HOOD",
-  "5214", "ANIME", "DMH6", "EZJ", "PEG", "THL", "REX33",
-  "XEC", "XDC", "GEHC", "NEAR", "DMC", "SYRUPUSDT"
+  "BTC",       // bitcoin
+  "ETH",       // ethereum
+  "SOL",       // solana
+  "LTC",       // litecoin
+  "ADA",       // cardano
+  "DOT",       // polkadot
+  "BNB",       // binancecoin
+  "XRP",       // ripple
+  "MATIC",     // matic-network
+  "DOGE",      // dogecoin
+  "SHIB",      // shiba-inu
+  "AVAX",      // avalanche-2
+  "LINK",      // chainlink
+  "XLM",       // stellar
+  "TRX",       // tron
+  "VET",       // vechain
+  "FIL",       // filecoin
+  "ATOM",      // cosmos
+  "ALGO",      // algorand
+  "ICP",       // internet-computer
+  "APT",       // aptos
+  "ARB",       // arbitrum
+  "OP",        // optimism
+  "SUI",       // sui
+  "HBAR",      // hedera-hashgraph
+  "GRT",       // the-graph
+  "AAVE",      // aave
+  "SNX",       // synthetix-network-token
+  "CAKE",      // pancakeswap-token
+  "UNI"        // uniswap
 ];
+
 
 const COINGECKO_API = "https://api.coingecko.com/api/v3/simple/price";
 const REDSTONE_API = "https://api.redstone.finance/prices";
