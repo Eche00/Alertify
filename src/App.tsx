@@ -3,6 +3,7 @@ import Container from "./components/Container";
 import Home from "./pages/Home";
 import Alert from "./pages/Alert";
 import { Toaster } from "react-hot-toast";
+import Comparison from "./pages/Comparison";
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route element={<Container />}>
             <Route path="/" element={<Home />} />
             <Route path="/alert" element={<Alert />} />
+            <Route path="/comparison" element={<Comparison />} />
 
           </Route>
         </Routes>

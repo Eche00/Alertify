@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import DonutSmallIcon from '@mui/icons-material/DonutSmall';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import { Compare } from "@mui/icons-material";
 function Sidebar() {
   return (
        <main  className=" flex flex-col w-fit  overflow-scroll relative ">
@@ -16,7 +17,6 @@ function Sidebar() {
               <img src="/logo.webp" alt="logo" className="lg:w-[100px] sm:w-[70px] w-[30px] lg:h-[100px] sm:h-[40px] h-[30px]  object-cover" /> <h2 className="text-black text-4xl sm:text-4xl font-extrabold select-none">
   <span className="lg:flex hidden">Alertify</span>
 </h2>
-
             </motion.section>
           </header>
           {/* navigation  */}
@@ -31,8 +31,17 @@ function Sidebar() {
                 }>
                 <span><DonutSmallIcon/></span>
                 <p className=" lg:flex hidden">Dashboard</p>
-                {/* B71C1C 323337 */}
               </NavLink>
+              <NavLink
+                to="/comparison"
+                className={({ isActive }) =>
+                  isActive
+                    ? " text-[14px] text-white font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] bg-[#B71C1C] py-[12px] px-[20px]  "
+                    : " text-[14px] text-gray-600 hover:text-gray-800 font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] py-[12px] px-[20px]  "
+                }>
+                <span><Compare/></span>
+                <p className=" lg:flex hidden">Comparison</p>
+              </NavLink>         
               <NavLink
                 to="/alert"
                 className={({ isActive }) =>
@@ -42,12 +51,7 @@ function Sidebar() {
                 }>
                 <span><NotificationsActiveIcon/></span>
                 <p className=" lg:flex hidden">Alert</p>
-                {/* B71C1C B71C1C */}
-              </NavLink>
-              
-
-             
-             
+              </NavLink>         
             </ul>
           </div>
       </main>

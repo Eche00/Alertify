@@ -28,77 +28,35 @@ export interface PythFeed {
 }
 
 //  APIs 
+// Chainlink uses CoinGecko IDs:
 const COINS = [
   "bitcoin", "ethereum", "solana", "litecoin", "cardano",
   "polkadot", "binancecoin", "ripple", "matic-network", "dogecoin",
   "shiba-inu", "avalanche-2", "chainlink", "stellar", "tron",
   "vechain", "filecoin", "cosmos", "algorand", "internet-computer", "aptos",
-  "arbitrum",
-  "optimism",
-  "sui",
-  "hedera-hashgraph",
-  "the-graph",
-  "aave",
-  "synthetix-network-token",
-  "pancakeswap-token",
-  "uniswap"
-];
-const symbols = [
-  "BTC",       // bitcoin
-  "ETH",       // ethereum
-  "SOL",       // solana
-  "LTC",       // litecoin
-  "ADA",       // cardano
-  "DOT",       // polkadot
-  "BNB",       // binancecoin
-  "XRP",       // ripple
-  "MATIC",     // matic-network
-  "DOGE",      // dogecoin
-  "SHIB",      // shiba-inu
-  "AVAX",      // avalanche-2
-  "LINK",      // chainlink
-  "XLM",       // stellar
-  "TRX",       // tron
-  "VET",       // vechain
-  "FIL",       // filecoin
-  "ATOM",      // cosmos
-  "ALGO",      // algorand
-  "ICP",       // internet-computer
-  "APT",       // aptos
-  "ARB",       // arbitrum
-  "OP",        // optimism
-  "SUI",       // sui
-  "HBAR",      // hedera-hashgraph
-  "GRT",       // the-graph
-  "AAVE",      // aave
-  "SNX",       // synthetix-network-token
-  "CAKE",      // pancakeswap-token
-  "UNI"        // uniswap
+  "arbitrum", "optimism", "sui", "hedera-hashgraph", "the-graph",
+  "aave", "synthetix-network-token", "pancakeswap-token", "uniswap"
 ];
 
+// Symbols used for Pyth filtering (uppercase symbols):
+const symbols = [
+  "BTC", "ETH", "SOL", "LTC", "ADA", "DOT", "BNB", "XRP",
+  "MATIC", "DOGE", "SHIB", "AVAX", "LINK", "XLM", "TRX",
+  "VET", "FIL", "ATOM", "ALGO", "ICP", "APT", "ARB", "OP",
+  "SUI", "HBAR", "GRT", "AAVE", "SNX", "CAKE", "UNI"
+];
+
+// RedStone symbols — must match their API supported symbols exactly:
+const REDSTONE_SYMBOLS = [
+  "BTC", "ETH", "SOL", "LTC", "ADA", "DOT", "BNB", "XRP",
+  "MATIC", "DOGE", "SHIB", "AVAX", "LINK", "XLM", "TRX",
+  "VET", "FIL", "ATOM", "ALGO", "ICP", "APT", "ARB", "OP",
+  "SUI", "HBAR", "GRT", "AAVE", "SNX", "CAKE", "UNI", "CRV"
+].join(",");
 
 const COINGECKO_API = "https://api.coingecko.com/api/v3/simple/price";
 const REDSTONE_API = "https://api.redstone.finance/prices";
-const REDSTONE_SYMBOLS = [
-  "ETH",
-  "BTC",
-  "SOL",
-  "LINK",
-  "ADA",
-  "BNB",
-  "XRP",
-  "DOGE",
-  "UNI",
-  "AVAX",
-  "ATOM",
-  "TRX",
-  "ARB",
-  "SUI",
-  "OP",
-  "AAVE",
-  "CRV",
 
-].join(",");
 
 
 const PYTH_API = "https://hermes.pyth.network/v2/price_feeds";
