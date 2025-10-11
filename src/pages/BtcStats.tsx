@@ -7,6 +7,7 @@ import {
   YAxis,
   Tooltip,
   Legend,
+  CartesianGrid,
 } from "recharts";
 
 const COINGECKO_API = "https://api.coingecko.com/api/v3/simple/price";
@@ -199,38 +200,90 @@ export default function OracleComparison() {
           </div>
 
           {/* MULTI-LINE CHART */}
-          <div className="w-full h-80 mt-8">
-            <ResponsiveContainer>
-              <LineChart data={chartData}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="Chainlink"
-                  stroke="#2563eb"
-                  strokeWidth={3}
-                  activeDot={{ r: 8 }}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="RedStone"
-                  stroke="#ef4444"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Pyth"
-                  stroke="#8b5cf6"
-                  strokeWidth={3}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+          <div className="w-full h-[420px] mt-10 p-4 bg-gradient-to-br from-[#0f172a] to-[#1e293b] rounded-2xl shadow-lg">
+  <h2 className="text-white text-xl font-semibold mb-4 px-4">Oracle Price Comparison</h2>
+
+  <ResponsiveContainer width="100%" height="90%">
+    <LineChart
+      data={chartData}
+      margin={{ top: 10, right: 30, left: 0, bottom: 10 }}
+    >
+      {/* Subtle background grid */}
+      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+
+      {/* Axes */}
+      <XAxis
+        dataKey="name"
+        stroke="#cbd5e1"
+        tick={{ fill: "#94a3b8", fontSize: 12 }}
+      />
+      <YAxis
+        stroke="#cbd5e1"
+        tick={{ fill: "#94a3b8", fontSize: 12 }}
+        domain={["auto", "auto"]}
+      />
+
+      {/* Custom tooltip */}
+      <Tooltip
+        contentStyle={{
+          backgroundColor: "rgba(30, 41, 59, 0.9)",
+          border: "none",
+          borderRadius: "10px",
+          color: "#fff",
+        }}
+        labelStyle={{ color: "#cbd5e1" }}
+      />
+      <Legend
+        wrapperStyle={{ color: "#cbd5e1", fontSize: 13 }}
+        verticalAlign="top"
+        height={40}
+      />
+
+      {/* Line Gradients */}
+      <defs>
+        <linearGradient id="chainlinkGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.9} />
+          <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.2} />
+        </linearGradient>
+        <linearGradient id="redstoneGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ef4444" stopOpacity={0.9} />
+          <stop offset="100%" stopColor="#ef4444" stopOpacity={0.2} />
+        </linearGradient>
+        <linearGradient id="pythGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#a855f7" stopOpacity={0.9} />
+          <stop offset="100%" stopColor="#a855f7" stopOpacity={0.2} />
+        </linearGradient>
+      </defs>
+
+      {/* Lines */}
+      <Line
+        type="monotone"
+        dataKey="Chainlink"
+        stroke="url(#chainlinkGradient)"
+        strokeWidth={3}
+        activeDot={{ r: 6, fill: "#3b82f6" }}
+        dot={false}
+      />
+      <Line
+        type="monotone"
+        dataKey="RedStone"
+        stroke="url(#redstoneGradient)"
+        strokeWidth={3}
+        activeDot={{ r: 6, fill: "#ef4444" }}
+        dot={false}
+      />
+      <Line
+        type="monotone"
+        dataKey="Pyth"
+        stroke="url(#pythGradient)"
+        strokeWidth={3}
+        activeDot={{ r: 6, fill: "#a855f7" }}
+        dot={false}
+      />
+    </LineChart>
+  </ResponsiveContainer>
+</div>
+
         </>
       )}
     </div>
