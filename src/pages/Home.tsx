@@ -2,6 +2,7 @@ import { useState } from "react";
 import Currencies from "../components/Currencies";
 import Stats from "./Stats";
 import Table from "./Table";
+import History from "./History";
 
 
 
@@ -19,6 +20,8 @@ function Home() {
         selectedOracle={selectedOracle}
         setSelectedOracle={setSelectedOracle}
         setSelectedFeeds={setSelectedFeeds}/>
+     <History /> 
+
     </div>
   );
 }
