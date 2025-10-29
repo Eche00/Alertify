@@ -9,6 +9,7 @@ import {
   Legend,
   CartesianGrid,
 } from "recharts";
+import History from "./History";
 
 const COINGECKO_API = "https://api.coingecko.com/api/v3";
 const REDSTONE_API = "https://api.redstone.finance/prices";
@@ -142,7 +143,7 @@ export default function OracleComparison() {
   }, [chainlinkCoin, redstoneCoin, pythCoin, timeframe]);
 
   return (
-    <div className="p-6 grid gap-6">
+    <div className="p-6 grid gap-6 max-h-screen  overflow-scroll">
       <h1 className="text-2xl font-bold">Comparison Dashboard</h1>
       <p className="text-gray-600">Chainlink, RedStone & Pyth Oracle Comparison</p>
 
@@ -297,6 +298,7 @@ export default function OracleComparison() {
           </div>
         </>
       )}
+      <History/>
     </div>
   );
 }

@@ -4,6 +4,8 @@ import Home from "./pages/Home";
 import Alert from "./pages/Alert";
 import { Toaster } from "react-hot-toast";
 import Comparison from "./pages/Comparison";
+import Create from "./pages/Create";
+import OracleComparison from "./pages/BtcStats";
 
 
 function App() {
@@ -18,7 +20,9 @@ function App() {
           <Route element={<Container />}>
             <Route path="/" element={<Home />} />
             <Route path="/alert" element={<Alert />} />
-            <Route path="/comparison" element={<Comparison />} />
+            <Route path="/pricefeeds" element={<Comparison />} />
+            <Route path="/comparison" element={<OracleComparison />} />
+            <Route path="/create" element={<Create />} />
 
           </Route>
         </Routes>

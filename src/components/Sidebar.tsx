@@ -2,12 +2,13 @@ import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import DonutSmallIcon from '@mui/icons-material/DonutSmall';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
-import { Compare } from "@mui/icons-material";
+import { Add, Compare } from "@mui/icons-material";
+import AlignVerticalBottomIcon from '@mui/icons-material/AlignVerticalBottom';
 function Sidebar() {
   return (
        <main  className=" flex flex-col w-fit  overflow-scroll relative ">
           {/* header  */}
-          <header className=" py-[20px] px-[24px] flex items-center justify-between border-b border-gray-400 w-[80%] mx-auto flex-col">
+          <header className=" py-[20px] sm:px-[24px] px-[18px] flex items-center justify-between border-b border-gray-400 w-[80%] mx-auto flex-col">
             <motion.section
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -26,28 +27,48 @@ function Sidebar() {
                 to="/"
                 className={({ isActive }) =>
                   isActive
-                    ? " text-[14px] text-white font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] bg-[#B71C1C] py-[12px] px-[20px]  "
-                    : " text-[14px] text-gray-600 hover:text-gray-800 font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] py-[12px] px-[20px]  "
+                    ? " text-[14px] text-white font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] bg-[#B71C1C] sm:py-[12px] py-[8px] sm:px-[20px] px-[16px] "
+                    : " text-[14px] text-gray-600 hover:text-gray-800 font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] sm:py-[12px] py-[8px] sm:px-[20px] px-[16px]  "
                 }>
                 <span><DonutSmallIcon/></span>
                 <p className=" lg:flex hidden">Dashboard</p>
               </NavLink>
               <NavLink
+                to="/create"
+                className={({ isActive }) =>
+                  isActive
+                    ? " text-[14px] text-white font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] bg-[#B71C1C] sm:py-[12px] py-[8px] sm:px-[20px] px-[16px]  "
+                    : " text-[14px] text-gray-600 hover:text-gray-800 font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] sm:py-[12px] py-[8px] sm:px-[20px] px-[16px]  "
+                }>
+                <span><Add/></span>
+                <p className=" lg:flex hidden">Create</p>
+              </NavLink>         
+              <NavLink
                 to="/comparison"
                 className={({ isActive }) =>
                   isActive
-                    ? " text-[14px] text-white font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] bg-[#B71C1C] py-[12px] px-[20px]  "
-                    : " text-[14px] text-gray-600 hover:text-gray-800 font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] py-[12px] px-[20px]  "
+                    ? " text-[14px] text-white font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] bg-[#B71C1C] sm:py-[12px] py-[8px] sm:px-[20px] px-[16px]  "
+                    : " text-[14px] text-gray-600 hover:text-gray-800 font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] sm:py-[12px] py-[8px] sm:px-[20px] px-[16px]  "
                 }>
                 <span><Compare/></span>
                 <p className=" lg:flex hidden">Comparison</p>
               </NavLink>         
               <NavLink
+                to="/pricefeeds"
+                className={({ isActive }) =>
+                  isActive
+                    ? " text-[14px] text-white font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] bg-[#B71C1C] sm:py-[12px] py-[8px] sm:px-[20px] px-[16px]  "
+                    : " text-[14px] text-gray-600 hover:text-gray-800 font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] sm:py-[12px] py-[8px] sm:px-[20px] px-[16px]  "
+                }>
+                <span><AlignVerticalBottomIcon/></span>
+                <p className=" lg:flex hidden">Feeds</p>
+              </NavLink>         
+              <NavLink
                 to="/alert"
                 className={({ isActive }) =>
                   isActive
-                    ? " text-[14px] text-white font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] bg-[#B71C1C] py-[12px] px-[20px]  "
-                    : " text-[14px] text-gray-600 hover:text-gray-800 font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] py-[12px] px-[20px]  "
+                    ? " text-[14px] text-white font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] bg-[#B71C1C] sm:py-[12px] py-[8px] sm:px-[20px] px-[16px]  "
+                    : " text-[14px] text-gray-600 hover:text-gray-800 font-[600] leading-[24px] flex items-center gap-[20px] rounded-[8px] sm:py-[12px] py-[8px] sm:px-[20px] px-[16px]  "
                 }>
                 <span><NotificationsActiveIcon/></span>
                 <p className=" lg:flex hidden">Alert</p>

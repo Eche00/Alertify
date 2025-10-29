@@ -15,7 +15,6 @@ import type {
   RedstoneFeed,
   PythFeed,
 } from "../utils/oracles";
-import OracleComparison from "./BtcStats";
 
 type OracleName = "Chainlink" | "RedStone" | "Pyth";
 
@@ -113,9 +112,8 @@ const Comparison: React.FC = () => {
   );
 
   return (
-    <div className="sm:p-8 p-2 min-h-screen">
+    <div className="sm:p-8 p-2 max-h-screen  overflow-scroll">
 
-<OracleComparison/>
 
       <div className="mb-6 flex md:flex-row flex-col md:items-center items-start justify-between gap-4">
       <h1 className="text-2xl font-bold mb-6 md:text-wrap text-nowrap">

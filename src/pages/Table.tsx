@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import ChainLink from "./ChainLink";
 import Redstone from "./Redstone";
 import Pyth from "./Pyth";
@@ -7,12 +8,27 @@ import Pyth from "./Pyth";
 export type OracleType = "RedStone" | "Chainlink" | "Pyth";
 
 interface TableProps {
-  selectedOracle: OracleType;
-  setSelectedOracle: (oracle: OracleType) => void;
-  setSelectedFeeds: (feeds: any[]) => void;
+  selectedOracle?: OracleType;
+  setSelectedOracle?: (oracle: OracleType) => void;
+  setSelectedFeeds?: (feeds: any[]) => void;
 }
 
-function Table({ selectedOracle, setSelectedOracle, setSelectedFeeds }: TableProps) {
+function Table({
+  selectedOracle: propSelectedOracle,
+  setSelectedOracle: propSetSelectedOracle,
+  setSelectedFeeds: propSetSelectedFeeds,
+}: TableProps) {
+  // fallback internal state (used only if props aren’t passed)
+  const [localOracle, setLocalOracle] = useState<OracleType>(
+    propSelectedOracle || "RedStone"
+  );
+  const [, setLocalFeeds] = useState<any[]>([]); // removed unused localFeeds
+
+  // determine which to use: parent or local
+  const selectedOracle = propSelectedOracle ?? localOracle;
+  const setSelectedOracle = propSetSelectedOracle ?? setLocalOracle;
+  const setSelectedFeeds = propSetSelectedFeeds ?? setLocalFeeds;
+
   const renderOracle = () => {
     switch (selectedOracle) {
       case "Chainlink":
@@ -28,9 +44,9 @@ function Table({ selectedOracle, setSelectedOracle, setSelectedFeeds }: TablePro
 
   return (
     <div className="mt-20 w-[90%] mx-auto">
-      {/* Buttons */}
+      {/* Oracle selection buttons */}
       <div className="flex items-center justify-between sm:gap-4 gap-2 mb-6 bg-white sm:w-fit w-full p-2 rounded-[10px] shadow-xl">
-        {([ "RedStone", "Chainlink", "Pyth"] as OracleType[]).map((oracle) => (
+        {(["RedStone", "Chainlink", "Pyth"] as OracleType[]).map((oracle) => (
           <button
             key={oracle}
             onClick={() => setSelectedOracle(oracle)}
@@ -45,7 +61,7 @@ function Table({ selectedOracle, setSelectedOracle, setSelectedFeeds }: TablePro
         ))}
       </div>
 
-      {/* Render selected oracle below */}
+      {/* Render selected oracle */}
       <div className="mt-8">{renderOracle()}</div>
     </div>
   );
