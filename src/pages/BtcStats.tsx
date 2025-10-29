@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  CartesianGrid,
-} from "recharts";
+// import {
+//   ResponsiveContainer,
+//   AreaChart,
+//   Area,
+//   XAxis,
+//   YAxis,
+//   Tooltip,
+//   Legend,
+//   CartesianGrid,
+// } from "recharts";
 import History from "./History";
 
 const COINGECKO_API = "https://api.coingecko.com/api/v3";
@@ -190,7 +190,7 @@ export default function OracleComparison() {
           </div>
 
           {/* --- CHART SECTION --- */}
-          <div className="w-full h-fit mt-10 p-4 bg-gradient-to-br from-[#0f172a] to-[#1e293b] rounded-2xl shadow-lg">
+          {/* <div className="w-full h-fit mt-10 p-4 bg-gradient-to-br from-[#0f172a] to-[#1e293b] rounded-2xl shadow-lg">
             <div className="w-full bg-slate-900 rounded-xl p-6">
               <h2 className="text-white text-xl font-semibold mb-4 px-4">Oracle Price Comparison</h2>
 
@@ -225,7 +225,6 @@ export default function OracleComparison() {
       height={40}
     />
 
-    {/* --- GRADIENTS --- */}
     <defs>
       <linearGradient id="chainlinkGradient" x1="0" y1="0" x2="0" y2="1">
         <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
@@ -241,7 +240,6 @@ export default function OracleComparison() {
       </linearGradient>
     </defs>
 
-    {/* --- FILLED WAVE AREAS --- */}
     <Area
       type="monotone"
       dataKey="Chainlink"
@@ -270,7 +268,6 @@ export default function OracleComparison() {
 </ResponsiveContainer>
 
 
-              {/* --- TIMEFRAME BUTTONS --- */}
               <div className="flex justify-center mt-4">
                 <div className="inline-flex bg-slate-800 rounded-lg shadow-inner border border-slate-700">
                   {[
@@ -295,7 +292,7 @@ export default function OracleComparison() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </>
       )}
       <History/>

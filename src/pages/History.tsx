@@ -1,196 +1,181 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Chart from "react-apexcharts";
-import { pricesData } from "../utils/history";
+import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { db } from "../lib/firebase";
 
-// ---- Types ----
-interface OracleData {
-  price: number;
+type Oracle = "Chainlink" | "RedStone" | "Pyth";
+
+interface OraclePrice {
+  price: number | null;
   status: string;
-  updated: string;
+  error?: string | null;
 }
 
-interface CoinHistory {
-  [timestamp: string]: {
-    Chainlink: OracleData;
-    RedStone: OracleData;
-    Pyth: OracleData;
-  };
+interface FirestoreDoc {
+  timestamp: string;
+  chainlink?: Record<string, OraclePrice>;
+  redstone?: Record<string, OraclePrice>;
+  pyth?: Record<string, OraclePrice>;
+  [key: string]: any;
 }
-
-interface CoinData {
-  symbol: string;
-  history: CoinHistory;
-}
-
-type Timeframe = "12h" | "1d" | "1w" | "1m";
 
 const History: React.FC = () => {
-  const [timeframe, setTimeframe] = useState<Timeframe>("1w");
+  const [data, setData] = useState<FirestoreDoc[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [timeframe, setTimeframe] = useState<"daily" | "weekly" | "monthly">("daily");
+  const [chainlinkCoin, setChainlinkCoin] = useState("btc");
+  const [redstoneCoin, setRedstoneCoin] = useState("eth");
+  const [pythCoin, setPythCoin] = useState("sol");
 
-  //  Independent coin selectors
-  const [chainlinkCoin, setChainlinkCoin] = useState<string>("BTC");
-  const [redstoneCoin, setRedstoneCoin] = useState<string>("ETH");
-  const [pythCoin, setPythCoin] = useState<string>("SOL");
-
-  const coins = Object.keys(pricesData);
-
-  // Helper: filter history by timeframe
-  const getFilteredData = (coin: CoinData) => {
-    const entries = Object.entries(coin.history);
-    switch (timeframe) {
-      case "12h":
-        return entries.slice(-12); // last 12 hours
-      case "1d":
-        return entries.slice(-24); // last 24 hours
-      case "1w":
-        return entries.slice(-168); // last 7 days
-      case "1m":
-        return entries.slice(-720); // last 30 days (30*24)
-      default:
-        return entries;
-    }
-  };
-
-  // 🧠 Build chart data for each oracle independently
-  const buildSeriesData = useMemo(() => {
-    const makeSeries = (coinSymbol: string, oracleKey: keyof CoinHistory[string]) => {
-      const coin = (pricesData as Record<string, CoinData>)[coinSymbol];
-      if (!coin) return [];
-      const filtered = getFilteredData(coin);
-      return filtered.map(([timestamp, data]) => ({
-        time: new Date(timestamp).toLocaleString("en-US", {
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        price: data[oracleKey].price,
-      }));
+  // 🔥 Fetch Firestore data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(collection(db, "priceHistory"), orderBy("timestamp", "asc"), limit(720));
+        const snapshot = await getDocs(q);
+        const docs: FirestoreDoc[] = snapshot.docs.map((doc) => doc.data() as FirestoreDoc);
+        setData(docs);
+      } catch (error) {
+        console.error("Error fetching Firestore data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
+    fetchData();
+
+    // refresh hourly
+    const interval = setInterval(fetchData, 60 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // 🧠 Filter data based on timeframe
+  const filteredData = useMemo(() => {
+    const now = new Date();
+    const cutoff = new Date();
+
+    if (timeframe === "daily") cutoff.setDate(now.getDate() - 1);
+    if (timeframe === "weekly") cutoff.setDate(now.getDate() - 7);
+    if (timeframe === "monthly") cutoff.setDate(now.getDate() - 30);
+
+    return data.filter((doc) => new Date(doc.timestamp) >= cutoff);
+  }, [data, timeframe]);
+
+  // 🧩 Merge timestamps across all oracles (to align x-axis)
+  const allTimestamps = useMemo(() => {
+    const set = new Set<string>();
+    filteredData.forEach((doc) => {
+      set.add(new Date(doc.timestamp).toISOString());
+    });
+    return Array.from(set).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+  }, [filteredData]);
+
+  // 🧮 Build series aligned to merged timestamps
+  const buildSeriesData = useMemo(() => {
+    const toMap = (oracle: Oracle, coin: string) => {
+      const oracleKey = oracle.toLowerCase();
+      const map = new Map<string, number>();
+      filteredData.forEach((doc) => {
+        const entry = doc[oracleKey]?.[coin];
+        if (entry && entry.price !== null) {
+          map.set(new Date(doc.timestamp).toISOString(), entry.price);
+        }
+      });
+      return map;
+    };
+
+    const chainlinkMap = toMap("Chainlink", chainlinkCoin);
+    const redstoneMap = toMap("RedStone", redstoneCoin);
+    const pythMap = toMap("Pyth", pythCoin);
+
+    const times = allTimestamps.map((t) =>
+      new Date(t).toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    );
 
     return {
-      Chainlink: makeSeries(chainlinkCoin, "Chainlink"),
-      RedStone: makeSeries(redstoneCoin, "RedStone"),
-      Pyth: makeSeries(pythCoin, "Pyth"),
+      x: times,
+      chainlink: allTimestamps.map((t) => chainlinkMap.get(t) ?? null),
+      redstone: allTimestamps.map((t) => redstoneMap.get(t) ?? null),
+      pyth: allTimestamps.map((t) => pythMap.get(t) ?? null),
     };
-  }, [timeframe, chainlinkCoin, redstoneCoin, pythCoin]);
+  }, [filteredData, chainlinkCoin, redstoneCoin, pythCoin, allTimestamps]);
 
-  //  Align timestamps (x-axis)
-  const xCategories =
-    buildSeriesData.Chainlink.length > 0
-      ? buildSeriesData.Chainlink.map((d) => d.time)
-      : buildSeriesData.RedStone.length > 0
-      ? buildSeriesData.RedStone.map((d) => d.time)
-      : buildSeriesData.Pyth.map((d) => d.time);
-
-  //  ApexCharts setup
   const options: ApexCharts.ApexOptions = {
-    chart: {
-      type: "area",
-      toolbar: { show: false },
-      zoom: { enabled: false },
-    },
+    chart: { type: "area", toolbar: { show: false }, zoom: { enabled: false } },
     dataLabels: { enabled: false },
     stroke: { curve: "smooth", width: 2 },
     fill: {
       type: "gradient",
-      gradient: {
-        shadeIntensity: 1,
-        opacityFrom: 0.4,
-        opacityTo: 0,
-        stops: [0, 100],
-      },
+      gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0, stops: [0, 100] },
     },
-    xaxis: {
-      categories: xCategories,
-      labels: { style: { fontSize: "10px" } },
-    },
+    xaxis: { categories: buildSeriesData.x, labels: { style: { fontSize: "10px" } } },
     yaxis: {
       labels: {
-        formatter: (v: number) => `$${v.toFixed(2)}`,
+        formatter: (v) => `$${v.toFixed(2)}`,
         style: { fontSize: "10px" },
       },
     },
-    tooltip: {
-      y: { formatter: (v: number) => `$${v.toLocaleString()}` },
-    },
     colors: ["#0070f3", "#B71C1C", "#27ae60"],
     legend: { position: "top" },
+    tooltip: { y: { formatter: (v) => (v ? `$${v.toLocaleString()}` : "-") } },
   };
 
-  //  Prepare chart series
   const series = [
-    {
-      name: `Chainlink (${chainlinkCoin})`,
-      data: buildSeriesData.Chainlink.map((d) => d.price),
-    },
-    {
-      name: `RedStone (${redstoneCoin})`,
-      data: buildSeriesData.RedStone.map((d) => d.price),
-    },
-    {
-      name: `Pyth (${pythCoin})`,
-      data: buildSeriesData.Pyth.map((d) => d.price),
-    },
+    { name: `Chainlink (${chainlinkCoin.toUpperCase()})`, data: buildSeriesData.chainlink },
+    { name: `RedStone (${redstoneCoin.toUpperCase()})`, data: buildSeriesData.redstone },
+    { name: `Pyth (${pythCoin.toUpperCase()})`, data: buildSeriesData.pyth },
   ];
 
+  if (loading) return <p className="p-8 text-gray-500">Loading chart data...</p>;
+
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1 style={{ fontSize: "1.8rem", fontWeight: "bold", marginBottom: "1.5rem" }}>
-       Oracle Price History Comparison
-      </h1>
+    <div className="p-8">
+      <h1 className="text-2xl font-bold mb-6">Oracle Price History (Live)</h1>
 
-     {/* Oracle Coin Selectors */}
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-  {[
-    { label: "Chainlink", color: "text-[#0070f3]", state: chainlinkCoin, set: setChainlinkCoin },
-    { label: "RedStone", color: "text-[#B71C1C]", state: redstoneCoin, set: setRedstoneCoin },
-    { label: "Pyth", color: "text-[#27ae60]", state: pythCoin, set: setPythCoin },
-  ].map((oracle) => (
-    <div key={oracle.label} className="p-4 rounded-2xl shadow-sm bg-gray-300">
-      <h2 className={`font-semibold mb-2 ${oracle.color}`}>{oracle.label} Coin</h2>
-      <select
-        value={oracle.state}
-        onChange={(e) => oracle.set(e.target.value)}
-        className="w-full border border-gray-400 rounded-lg p-2 outline-none cursor-pointer"
-      >
-        {coins.map((coin) => (
-          <option key={coin} value={coin}>
-            {coin.charAt(0).toUpperCase() + coin.slice(1)}
-          </option>
+      {/* Timeframe Selector */}
+      <div className="flex gap-3 mb-6">
+        {["daily", "weekly", "monthly"].map((tf) => (
+          <button
+            key={tf}
+            onClick={() => setTimeframe(tf as any)}
+            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+              timeframe === tf ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            {tf.charAt(0).toUpperCase() + tf.slice(1)}
+          </button>
         ))}
-      </select>
-    </div>
-  ))}
-</div>
+      </div>
 
+      {/* Coin Selectors */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {[
+          { label: "Chainlink", color: "text-[#0070f3]", state: chainlinkCoin, set: setChainlinkCoin },
+          { label: "RedStone", color: "text-[#B71C1C]", state: redstoneCoin, set: setRedstoneCoin },
+          { label: "Pyth", color: "text-[#27ae60]", state: pythCoin, set: setPythCoin },
+        ].map((oracle) => (
+          <div key={oracle.label} className="p-4 rounded-2xl shadow-sm bg-gray-300">
+            <h2 className={`font-semibold mb-2 ${oracle.color}`}>{oracle.label} Coin</h2>
+            <select
+              value={oracle.state}
+              onChange={(e) => oracle.set(e.target.value)}
+              className="w-full border border-gray-400 rounded-lg p-2 outline-none cursor-pointer"
+            >
+              {Object.keys(data[0]?.chainlink || {}).map((coin) => (
+                <option key={coin} value={coin}>
+                  {coin.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          </div>
+        ))}
+      </div>
 
-     {/*  Timeframe Selector  */}
-<div className="flex flex-wrap items-center gap-3 mb-6">
-  {[
-    { key: "12h", label: "12 Hours" },
-    { key: "1d", label: "1 Day" },
-    { key: "1w", label: "1 Week" },
-    { key: "1m", label: "1 Month" },
-  ].map((tf) => (
-    <button
-      key={tf.key}
-      onClick={() => setTimeframe(tf.key as Timeframe)}
-      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-sm 
-        ${
-          timeframe === tf.key
-            ? "bg-[#B71C1C] text-white scale-105 shadow-md"
-            : "bg-gray-200 text-gray-800 hover:bg-gray-300 hover:shadow-md"
-        } cursor-pointer`}
-    >
-      {tf.label}
-    </button>
-  ))}
-</div>
-
-
-      {/* --- Chart --- */}
       <div style={{ width: "100%", height: 500 }}>
         <Chart options={options} series={series} type="area" height={500} />
       </div>
