@@ -14,25 +14,28 @@ interface OraclePrice {
 
 interface FirestoreDoc {
   timestamp: string;
+  created: number;
   chainlink?: Record<string, OraclePrice>;
   redstone?: Record<string, OraclePrice>;
   pyth?: Record<string, OraclePrice>;
   [key: string]: any;
 }
 
-const History: React.FC = () => {
+interface Props {
+  chainlinkCoin: string;
+  redstoneCoin: string;
+  pythCoin: string;
+}
+
+const History: React.FC<Props> = ({ chainlinkCoin, redstoneCoin, pythCoin }) => {
   const [data, setData] = useState<FirestoreDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeframe, setTimeframe] = useState<"daily" | "weekly" | "monthly">("daily");
-  const [chainlinkCoin, setChainlinkCoin] = useState("btc");
-  const [redstoneCoin, setRedstoneCoin] = useState("eth");
-  const [pythCoin, setPythCoin] = useState("sol");
 
-  // 🔥 Fetch Firestore data
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const q = query(collection(db, "priceHistory"), orderBy("timestamp", "asc"), limit(720));
+        const q = query(collection(db, "priceHistory"), orderBy("created", "asc"), limit(720));
         const snapshot = await getDocs(q);
         const docs: FirestoreDoc[] = snapshot.docs.map((doc) => doc.data() as FirestoreDoc);
         setData(docs);
@@ -43,34 +46,25 @@ const History: React.FC = () => {
       }
     };
     fetchData();
-
-    // refresh hourly
     const interval = setInterval(fetchData, 60 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // 🧠 Filter data based on timeframe
   const filteredData = useMemo(() => {
     const now = new Date();
     const cutoff = new Date();
-
     if (timeframe === "daily") cutoff.setDate(now.getDate() - 1);
     if (timeframe === "weekly") cutoff.setDate(now.getDate() - 7);
     if (timeframe === "monthly") cutoff.setDate(now.getDate() - 30);
-
     return data.filter((doc) => new Date(doc.timestamp) >= cutoff);
   }, [data, timeframe]);
 
-  // 🧩 Merge timestamps across all oracles (to align x-axis)
   const allTimestamps = useMemo(() => {
     const set = new Set<string>();
-    filteredData.forEach((doc) => {
-      set.add(new Date(doc.timestamp).toISOString());
-    });
+    filteredData.forEach((doc) => set.add(new Date(doc.timestamp).toISOString()));
     return Array.from(set).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
   }, [filteredData]);
 
-  // 🧮 Build series aligned to merged timestamps
   const buildSeriesData = useMemo(() => {
     const toMap = (oracle: Oracle, coin: string) => {
       const oracleKey = oracle.toLowerCase();
@@ -94,6 +88,7 @@ const History: React.FC = () => {
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
+        hour12: false,
       })
     );
 
@@ -113,13 +108,7 @@ const History: React.FC = () => {
       type: "gradient",
       gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0, stops: [0, 100] },
     },
-    xaxis: { categories: buildSeriesData.x, labels: { style: { fontSize: "10px" } } },
-    yaxis: {
-      labels: {
-        formatter: (v) => `$${v.toFixed(2)}`,
-        style: { fontSize: "10px" },
-      },
-    },
+    xaxis: { categories: buildSeriesData.x },
     colors: ["#0070f3", "#B71C1C", "#27ae60"],
     legend: { position: "top" },
     tooltip: { y: { formatter: (v) => (v ? `$${v.toLocaleString()}` : "-") } },
@@ -134,52 +123,73 @@ const History: React.FC = () => {
   if (loading) return <p className="p-8 text-gray-500">Loading chart data...</p>;
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Oracle Price History (Live)</h1>
+    <div className="w-full h-fit mt-10 p-4 bg-gradient-to-br from-[#0f172a] to-[#1e293b] rounded-2xl shadow-lg">
+  <div className="w-full bg-slate-900 rounded-xl p-6">
+    <h2 className="text-white text-xl font-semibold mb-4 px-4">
+      Oracle Price History (Live)
+    </h2>
 
-      {/* Timeframe Selector */}
-      <div className="flex gap-3 mb-6">
+    {/* --- Timeframe Toggle --- */}
+    <div className="flex justify-center mb-6">
+      <div className="inline-flex bg-slate-800 rounded-lg shadow-inner border border-slate-700">
         {["daily", "weekly", "monthly"].map((tf) => (
           <button
             key={tf}
             onClick={() => setTimeframe(tf as any)}
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-              timeframe === tf ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            className={`px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${
+              timeframe === tf
+                ? "bg-indigo-600 text-white shadow-md"
+                : "text-gray-400 hover:text-white hover:bg-slate-700"
             }`}
           >
-            {tf.charAt(0).toUpperCase() + tf.slice(1)}
+            {tf === "daily" ? "1D" : tf === "weekly" ? "1W" : "1M"}
           </button>
         ))}
       </div>
-
-      {/* Coin Selectors */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {[
-          { label: "Chainlink", color: "text-[#0070f3]", state: chainlinkCoin, set: setChainlinkCoin },
-          { label: "RedStone", color: "text-[#B71C1C]", state: redstoneCoin, set: setRedstoneCoin },
-          { label: "Pyth", color: "text-[#27ae60]", state: pythCoin, set: setPythCoin },
-        ].map((oracle) => (
-          <div key={oracle.label} className="p-4 rounded-2xl shadow-sm bg-gray-300">
-            <h2 className={`font-semibold mb-2 ${oracle.color}`}>{oracle.label} Coin</h2>
-            <select
-              value={oracle.state}
-              onChange={(e) => oracle.set(e.target.value)}
-              className="w-full border border-gray-400 rounded-lg p-2 outline-none cursor-pointer"
-            >
-              {Object.keys(data[0]?.chainlink || {}).map((coin) => (
-                <option key={coin} value={coin}>
-                  {coin.toUpperCase()}
-                </option>
-              ))}
-            </select>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ width: "100%", height: 500 }}>
-        <Chart options={options} series={series} type="area" height={500} />
-      </div>
     </div>
+
+    {/* --- Apex Chart --- */}
+    <div className="w-full h-[450px]">
+      <Chart
+        options={{
+          ...options,
+          chart: {
+            ...options.chart,
+            background: "transparent",
+          },
+          grid: {
+            borderColor: "rgba(255,255,255,0.1)",
+          },
+          xaxis: {
+            ...options.xaxis,
+            labels: {
+              style: { colors: "#94a3b8", fontSize: "12px" },
+            },
+            axisBorder: { color: "#475569" },
+            axisTicks: { color: "#475569" },
+          },
+          yaxis: {
+            labels: {
+              style: { colors: "#94a3b8", fontSize: "12px" },
+            },
+          },
+          legend: {
+            ...options.legend,
+            labels: { colors: "#cbd5e1" },
+          },
+          tooltip: {
+            ...options.tooltip,
+            theme: "dark",
+          },
+        }}
+        series={series}
+        type="area"
+        height={450}
+      />
+    </div>
+  </div>
+</div>
+
   );
 };
 
