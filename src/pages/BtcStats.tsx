@@ -47,21 +47,27 @@ export default function OracleComparison() {
 
       // Pyth
       const pythSym = SYMBOLS[COINS.indexOf(pythCoin)] || "SOL";
+
+      // Fetch all price feeds from Hermes
       const feedsRes = await fetch(`${PYTH_API}/price_feeds`);
       const feeds = await feedsRes.json();
-      const selectedFeed = feeds.find(
-        (f: any) =>
-          f.attributes?.base === pythSym ||
-          f.attributes?.display_symbol?.startsWith(pythSym + "/")
-      );
 
-      let pythValue;
-      if (selectedFeed) {
+      // Match feed by "SYM/USD" pattern to avoid wrong pairs (e.g. ETH/USDT)
+      const selectedFeed = feeds.find((f: any) => {
+        const sym = f.attributes?.display_symbol?.toUpperCase?.();
+        return sym === `${pythSym}/USD` || sym === `${pythSym}USD`;
+      });
+
+      let pythValue: number | undefined = undefined;
+
+      if (selectedFeed?.id) {
         const latestRes = await fetch(`${PYTH_API}/updates/price/latest?ids[]=${selectedFeed.id}`);
         const latest = await latestRes.json();
         const parsed = latest.parsed?.[0];
-        if (parsed?.price?.price && parsed?.price?.expo) {
-          pythValue = Number(parsed.price.price) * Math.pow(10, parsed.price.expo);
+
+        if (parsed?.price?.price != null && parsed?.price?.expo != null) {
+          // Apply correct decimal scaling (expo is usually negative)
+          pythValue = parsed.price.price * Math.pow(10, parsed.price.expo);
         }
       }
 
@@ -93,7 +99,7 @@ export default function OracleComparison() {
           { label: "Pyth", color: "text-purple-500", state: pythCoin, set: setPythCoin },
         ].map((s) => (
           <div key={s.label} className="p-4 rounded-2xl shadow-sm bg-gray-300">
-            <h2 className={`font-semibold mb-2 ${s.color}`}>{s.label} Coin</h2>
+            <h2 className={`font-semibold mb-2 ${s.color}`}>{s.label} </h2>
             <select
               value={s.state}
               onChange={(e) => s.set(e.target.value)}
@@ -116,20 +122,19 @@ export default function OracleComparison() {
           {/* --- PRICE CARDS --- */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             {[
-              { label: "RedStone", color: "text-white",img: "https://cryptocurrencyjobs.co/startups/assets/logos/redstone.png", val: prices.redstone },
-              { label: "Chainlink", color: "text-white",img: "https://images.seeklogo.com/logo-png/42/1/chainlink-link-logo-png_seeklogo-423097.png", val: prices.chainlink },
-              { label: "Pyth", color: "text-white",img: "https://cryptocurrencyjobs.co/startups/assets/logos/pyth.jpg", val: prices.pyth },
+              { label: "RedStone", color: "text-white", img: "https://cryptocurrencyjobs.co/startups/assets/logos/redstone.png", val: prices.redstone },
+              { label: "Chainlink", color: "text-white", img: "https://images.seeklogo.com/logo-png/42/1/chainlink-link-logo-png_seeklogo-423097.png", val: prices.chainlink },
+              { label: "Pyth", color: "text-white", img: "https://cryptocurrencyjobs.co/startups/assets/logos/pyth.jpg", val: prices.pyth },
             ].map((p) => (
               <div key={p.label} className="shadow-lg rounded-2xl p-4 bg-[#B71C1C] text-gray-200">
-                
                 <div className="flex flex-1 w-full gap-5 justify-between">
-                <h2 className={`font-semibold ${p.color}`}>{p.label}</h2>
-                <div className="bg-[#f5092016] w-[40px] h-[40px] flex items-center justify-center rounded-full">
-                  <span className="text-red-700 text-xl">
-                    <img src={p.img} alt="" className="w-[40px] h-[40px] rounded-full object-cover" />
-                  </span>
+                  <h2 className={`font-semibold ${p.color}`}>{p.label}</h2>
+                  <div className="bg-[#f5092016] w-[40px] h-[40px] flex items-center justify-center rounded-full">
+                    <span className="text-red-700 text-xl">
+                      <img src={p.img} alt="" className="w-[40px] h-[40px] rounded-full object-cover" />
+                    </span>
+                  </div>
                 </div>
-              </div>
                 <p className="text-xl font-bold">${p.val?.toLocaleString() ?? "—"}</p>
               </div>
             ))}

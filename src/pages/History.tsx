@@ -30,7 +30,7 @@ interface Props {
 const History: React.FC<Props> = ({ chainlinkCoin, redstoneCoin, pythCoin }) => {
   const [data, setData] = useState<FirestoreDoc[]>([]);
   const [loading, setLoading] = useState(true);
-  const [timeframe, setTimeframe] = useState<"daily" | "weekly" | "monthly">("daily");
+  const [timeframe, setTimeframe] = useState<"halfday" | "daily" | "weekly" | "monthly">("halfday");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,9 +53,12 @@ const History: React.FC<Props> = ({ chainlinkCoin, redstoneCoin, pythCoin }) => 
   const filteredData = useMemo(() => {
     const now = new Date();
     const cutoff = new Date();
+
+    if (timeframe === "halfday") cutoff.setHours(now.getHours() - 12);
     if (timeframe === "daily") cutoff.setDate(now.getDate() - 1);
     if (timeframe === "weekly") cutoff.setDate(now.getDate() - 7);
     if (timeframe === "monthly") cutoff.setDate(now.getDate() - 30);
+
     return data.filter((doc) => new Date(doc.timestamp) >= cutoff);
   }, [data, timeframe]);
 
@@ -124,72 +127,77 @@ const History: React.FC<Props> = ({ chainlinkCoin, redstoneCoin, pythCoin }) => 
 
   return (
     <div className="w-full h-fit mt-10 p-4 bg-gradient-to-br from-[#0f172a] to-[#1e293b] rounded-2xl shadow-lg">
-  <div className="w-full bg-slate-900 rounded-xl p-6">
-    <h2 className="text-white text-xl font-semibold mb-4 px-4">
-      Oracle Price History (Live)
-    </h2>
+      <div className="w-full bg-slate-900 rounded-xl p-6">
+        <h2 className="text-white text-xl font-semibold mb-4 px-4">
+          Oracle Price History (Live)
+        </h2>
 
-    {/* --- Timeframe Toggle --- */}
-    <div className="flex justify-center mb-6">
-      <div className="inline-flex bg-slate-800 rounded-lg shadow-inner border border-slate-700">
-        {["daily", "weekly", "monthly"].map((tf) => (
-          <button
-            key={tf}
-            onClick={() => setTimeframe(tf as any)}
-            className={`px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${
-              timeframe === tf
-                ? "bg-indigo-600 text-white shadow-md"
-                : "text-gray-400 hover:text-white hover:bg-slate-700"
-            }`}
-          >
-            {tf === "daily" ? "1D" : tf === "weekly" ? "1W" : "1M"}
-          </button>
-        ))}
+        {/* --- Timeframe Toggle --- */}
+        <div className="flex justify-center mb-6">
+          <div className="inline-flex bg-slate-800 rounded-lg shadow-inner border border-slate-700">
+            {["halfday", "daily", "weekly", "monthly"].map((tf) => (
+              <button
+                key={tf}
+                onClick={() => setTimeframe(tf as any)}
+                className={`px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${
+                  timeframe === tf
+                    ? "bg-indigo-600 text-white shadow-md"
+                    : "text-gray-400 hover:text-white hover:bg-slate-700"
+                }`}
+              >
+                {tf === "halfday"
+                  ? "12H"
+                  : tf === "daily"
+                  ? "1D"
+                  : tf === "weekly"
+                  ? "1W"
+                  : "1M"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* --- Apex Chart --- */}
+        <div className="w-full h-[450px]">
+          <Chart
+            options={{
+              ...options,
+              chart: {
+                ...options.chart,
+                background: "transparent",
+              },
+              grid: {
+                borderColor: "rgba(255,255,255,0.1)",
+              },
+              xaxis: {
+                ...options.xaxis,
+                labels: {
+                  style: { colors: "#94a3b8", fontSize: "12px" },
+                },
+                axisBorder: { color: "#475569" },
+                axisTicks: { color: "#475569" },
+              },
+              yaxis: {
+                labels: {
+                  style: { colors: "#94a3b8", fontSize: "12px" },
+                },
+              },
+              legend: {
+                ...options.legend,
+                labels: { colors: "#cbd5e1" },
+              },
+              tooltip: {
+                ...options.tooltip,
+                theme: "dark",
+              },
+            }}
+            series={series}
+            type="area"
+            height={450}
+          />
+        </div>
       </div>
     </div>
-
-    {/* --- Apex Chart --- */}
-    <div className="w-full h-[450px]">
-      <Chart
-        options={{
-          ...options,
-          chart: {
-            ...options.chart,
-            background: "transparent",
-          },
-          grid: {
-            borderColor: "rgba(255,255,255,0.1)",
-          },
-          xaxis: {
-            ...options.xaxis,
-            labels: {
-              style: { colors: "#94a3b8", fontSize: "12px" },
-            },
-            axisBorder: { color: "#475569" },
-            axisTicks: { color: "#475569" },
-          },
-          yaxis: {
-            labels: {
-              style: { colors: "#94a3b8", fontSize: "12px" },
-            },
-          },
-          legend: {
-            ...options.legend,
-            labels: { colors: "#cbd5e1" },
-          },
-          tooltip: {
-            ...options.tooltip,
-            theme: "dark",
-          },
-        }}
-        series={series}
-        type="area"
-        height={450}
-      />
-    </div>
-  </div>
-</div>
-
   );
 };
 
