@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import Comparison from "./pages/Comparison";
 import Create from "./pages/Create";
 import OracleComparison from "./pages/BtcStats";
+import Pricefeedupdate from "./pages/Pricefeedupdate";
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
             <Route path="/pricefeeds" element={<Comparison />} />
             <Route path="/comparison" element={<OracleComparison />} />
             <Route path="/create" element={<Create />} />
+            <Route path="/update" element={<Pricefeedupdate />} />
 
           </Route>
         </Routes>
