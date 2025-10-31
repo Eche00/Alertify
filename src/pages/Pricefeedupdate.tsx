@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import  { useEffect, useState } from "react";
+import {  collection, addDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { CheckCircle, ErrorOutline, PriceChange, Refresh } from "@mui/icons-material";
 import toast from "react-hot-toast";
