@@ -1,3 +1,4 @@
+// import type { VercelRequest, VercelResponse } from "@vercel/node";
 // import { db } from "../src/lib/firebase";
 // import { collection, addDoc } from "firebase/firestore";
 
@@ -102,7 +103,7 @@
 //   return formatted;
 // }
 
-// export async function fetchAllPrices() {
+// async function fetchAllPrices() {
 //   const [chainlink, redstone, pyth] = await Promise.all([
 //     fetchChainlinkPrices(),
 //     fetchRedstonePrices(),
@@ -116,8 +117,7 @@
 //   };
 // }
 
-// // Run this manually or on a schedule
-// export async function updatePrices() {
+// async function updatePrices() {
 //   try {
 //     const prices = await fetchAllPrices();
 //     await addDoc(collection(db, "priceHistory"), {
@@ -132,4 +132,11 @@
 //   }
 // }
 
-console.log("This is a placeholder file for price update logic.");
+// // 👇 Properly typed Vercel handler
+// export default async function handler(req: VercelRequest, res: VercelResponse) {
+//   await updatePrices();
+//   res.status(200).json({ success: true, time: new Date().toISOString() });
+// }
+
+
+console.log("Hello man..");
