@@ -96,8 +96,6 @@ async function fetchPythPrices() {
   const base = f.attributes?.base;
   const display = f.attributes?.display_symbol || "";
   
-  // ✅ Only include if it's one of your target symbols
-  // ✅ and pairs with USD (to avoid SOL/USDC duplicates)
   return (
     PYTH_SYMBOLS.includes(base) &&
     (display.includes("/USD") || display.includes("/USDT"))
@@ -119,7 +117,6 @@ async function fetchPythPrices() {
       const rawPrice = Number(p.price.price);
       const expo = Number(p.price.expo);
       const realPrice = rawPrice * Math.pow(10, expo);
-      console.log(asset,realPrice);
       
       formatted[asset.toUpperCase()] = {
         oracle: "Pyth",
