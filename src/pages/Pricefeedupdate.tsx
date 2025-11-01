@@ -92,11 +92,18 @@ async function fetchPythPrices() {
     const feedsRes = await fetch(PYTH_FEEDS_API);
     const feedsData = await feedsRes.json();
 
-    const selected = feedsData.filter(
-      (f: any) =>
-        PYTH_SYMBOLS.includes(f.attributes?.base) ||
-        PYTH_SYMBOLS.includes(f.attributes?.display_symbol?.split("/")?.[0])
-    );
+  const selected = feedsData.filter((f: any) => {
+  const base = f.attributes?.base;
+  const display = f.attributes?.display_symbol || "";
+  
+  // ✅ Only include if it's one of your target symbols
+  // ✅ and pairs with USD (to avoid SOL/USDC duplicates)
+  return (
+    PYTH_SYMBOLS.includes(base) &&
+    (display.includes("/USD") || display.includes("/USDT"))
+  );
+});
+
 
     if (selected.length === 0) return {};
 
@@ -108,9 +115,12 @@ async function fetchPythPrices() {
     pricesData.parsed.forEach((p: any) => {
       const feed = selected.find((f: any) => f.id === p.id);
       const asset = feed?.attributes?.base || p.id;
+
       const rawPrice = Number(p.price.price);
       const expo = Number(p.price.expo);
       const realPrice = rawPrice * Math.pow(10, expo);
+      console.log(asset,realPrice);
+      
       formatted[asset.toUpperCase()] = {
         oracle: "Pyth",
         price: realPrice,
