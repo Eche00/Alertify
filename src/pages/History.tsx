@@ -31,7 +31,7 @@ interface Props {
 const History: React.FC<Props> = ({ chainlinkCoin, redstoneCoin, pythCoin }) => {
   const [data, setData] = useState<FirestoreDoc[]>([]);
   const [loading, setLoading] = useState(true);
-  const [timeframe, setTimeframe] = useState<"twohour" | "halfday" | "daily" | "weekly" | "monthly">("twohour");
+  const [timeframe, setTimeframe] = useState<"halfday" | "daily" | "weekly" | "monthly">("halfday");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,7 +59,6 @@ const History: React.FC<Props> = ({ chainlinkCoin, redstoneCoin, pythCoin }) => 
 
     const now = new Date(latestTimestamp);
     const cutoff = new Date(latestTimestamp);
-    if (timeframe === "twohour") cutoff.setHours(now.getHours() - 2);
     if (timeframe === "halfday") cutoff.setHours(now.getHours() - 12);
     if (timeframe === "daily") cutoff.setDate(now.getDate() - 1);
     if (timeframe === "weekly") cutoff.setDate(now.getDate() - 7);
@@ -189,7 +188,7 @@ const History: React.FC<Props> = ({ chainlinkCoin, redstoneCoin, pythCoin }) => 
         {/* Timeframe Controls */}
         <div className="flex justify-center mb-6">
           <div className="inline-flex bg-slate-800 rounded-lg border border-slate-700">
-            {["twohour", "halfday", "daily", "weekly", "monthly"].map((tf) => (
+            {[ "halfday", "daily", "weekly", "monthly"].map((tf) => (
               <button
                 key={tf}
                 onClick={() => setTimeframe(tf as any)}
@@ -199,7 +198,7 @@ const History: React.FC<Props> = ({ chainlinkCoin, redstoneCoin, pythCoin }) => 
                     : "text-gray-400 hover:text-white hover:bg-slate-700"
                 }`}
               >
-                {tf === "twohour" ? "2H" : tf === "halfday" ? "12H" : tf === "daily" ? "1D" : tf === "weekly" ? "1W" : "1M"}
+                { tf === "halfday" ? "12H" : tf === "daily" ? "1D" : tf === "weekly" ? "1W" : "1M"}
               </button>
             ))}
           </div>
