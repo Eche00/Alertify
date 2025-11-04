@@ -6,17 +6,34 @@ const COINGECKO_API = "https://api.coingecko.com/api/v3";
 const REDSTONE_API = "https://api.redstone.finance/prices";
 const PYTH_API = "https://hermes.pyth.network/v2";
 
-// ✅ Full Coin List (CoinGecko IDs)
-const COINS = [
+//  Chainlink (via CoinGecko)
+const CHAINLINK_COINS = [
   "bitcoin", "ethereum", "solana", "litecoin", "cardano",
-  "polkadot", "binancecoin", "ripple", "matic-network", "dogecoin",
+  "polkadot", "binancecoin", "ripple",  "dogecoin",
+  "shiba-inu", "avalanche-2", "chainlink", "stellar", "tron",
+  "vechain", "filecoin", "cosmos", "algorand", "internet-computer",
+  "aptos", "arbitrum", "optimism", "sui", "hedera-hashgraph",
+  "the-graph", "aave",  "pancakeswap-token", "uniswap"
+];
+
+//  RedStone Supported Tokens (you can edit later)
+const REDSTONE_COINS = [
+ "bitcoin", "ethereum", "solana", "cardano",
+   "binancecoin", "ripple",  "dogecoin","shiba-inu",
+   "avalanche-2", "chainlink",  "tron",
+   "cosmos",  "arbitrum", "optimism", "sui", "aave", "uniswap","curve-dao-token"
+];
+
+//  Pyth Supported Tokens (usually fewer)
+const PYTH_COINS = [
+  "bitcoin", "ethereum", "solana", "litecoin", "cardano",
+  "polkadot", "binancecoin", "ripple", "dogecoin",
   "shiba-inu", "avalanche-2", "chainlink", "stellar", "tron",
   "vechain", "filecoin", "cosmos", "algorand", "internet-computer",
   "aptos", "arbitrum", "optimism", "sui", "hedera-hashgraph",
   "the-graph", "aave", "synthetix-network-token", "pancakeswap-token", "uniswap"
 ];
 
-// ✅ Clean Symbol Map (for 1:1 comparison)
 const SYMBOL_MAP: Record<string, string> = {
   "bitcoin": "BTC",
   "ethereum": "ETH",
@@ -48,7 +65,10 @@ const SYMBOL_MAP: Record<string, string> = {
   "synthetix-network-token": "SNX",
   "pancakeswap-token": "CAKE",
   "uniswap": "UNI",
+  "curve-dao-token": "CRV",
+
 };
+
 
 export default function OracleComparison() {
   const [chainlinkCoin, setChainlinkCoin] = useState("bitcoin");
@@ -58,11 +78,11 @@ export default function OracleComparison() {
   const [prices, setPrices] = useState<{ chainlink?: number; redstone?: number; pyth?: number }>({});
   const [loading, setLoading] = useState(false);
 
-  // ✅ Fetch Real-Time Prices
+  //  Fetch Real-Time Prices
   const fetchPrices = async () => {
     setLoading(true);
     try {
-      // --- Chainlink (via CoinGecko) ---
+      // --- Chainlink (CoinGecko) ---
       const clRes = await fetch(`${COINGECKO_API}/simple/price?ids=${chainlinkCoin}&vs_currencies=usd`);
       const clJson = await clRes.json();
       const chainlinkPrice = clJson[chainlinkCoin]?.usd ?? undefined;
@@ -78,7 +98,6 @@ export default function OracleComparison() {
       const feedsRes = await fetch(`${PYTH_API}/price_feeds`);
       const feeds = await feedsRes.json();
 
-      // Match feed symbol by “SYM/USD” or “SYMUSD”
       const selectedFeed = feeds.find((f: any) => {
         const sym = f.attributes?.display_symbol?.toUpperCase?.();
         return sym === `${pythSym}/USD` || sym === `${pythSym}USD`;
@@ -102,7 +121,6 @@ export default function OracleComparison() {
     }
   };
 
-  // ✅ Auto-refresh every minute
   useEffect(() => {
     fetchPrices();
     const interval = setInterval(fetchPrices, 60000);
@@ -116,26 +134,53 @@ export default function OracleComparison() {
 
       {/* --- COIN SELECTORS --- */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {[
-          { label: "RedStone", color: "text-red-500", state: redstoneCoin, set: setRedstoneCoin },
-          { label: "Chainlink", color: "text-indigo-600", state: chainlinkCoin, set: setChainlinkCoin },
-          { label: "Pyth", color: "text-purple-500", state: pythCoin, set: setPythCoin },
-        ].map((s) => (
-          <div key={s.label} className="p-4 rounded-2xl shadow-sm bg-gray-300">
-            <h2 className={`font-semibold mb-2 ${s.color}`}>{s.label}</h2>
-            <select
-              value={s.state}
-              onChange={(e) => s.set(e.target.value)}
-              className="w-full border border-gray-400 rounded-lg p-2 outline-none"
-            >
-              {COINS.map((coin) => (
-                <option key={coin} value={coin}>
-                  {coin.charAt(0).toUpperCase() + coin.slice(1)}
-                </option>
-              ))}
-            </select>
-          </div>
-        ))}
+        {/* --- RedStone --- */}
+        <div className="p-4 rounded-2xl shadow-sm bg-gray-300">
+          <h2 className="font-semibold mb-2 text-red-500">RedStone</h2>
+          <select
+            value={redstoneCoin}
+            onChange={(e) => setRedstoneCoin(e.target.value)}
+            className="w-full border border-gray-400 rounded-lg p-2 outline-none"
+          >
+            {REDSTONE_COINS.map((coin) => (
+              <option key={coin} value={coin}>
+                {coin.charAt(0).toUpperCase() + coin.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* --- Chainlink --- */}
+        <div className="p-4 rounded-2xl shadow-sm bg-gray-300">
+          <h2 className="font-semibold mb-2 text-indigo-600">Chainlink</h2>
+          <select
+            value={chainlinkCoin}
+            onChange={(e) => setChainlinkCoin(e.target.value)}
+            className="w-full border border-gray-400 rounded-lg p-2 outline-none"
+          >
+            {CHAINLINK_COINS.map((coin) => (
+              <option key={coin} value={coin}>
+                {coin.charAt(0).toUpperCase() + coin.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* --- Pyth --- */}
+        <div className="p-4 rounded-2xl shadow-sm bg-gray-300">
+          <h2 className="font-semibold mb-2 text-purple-500">Pyth</h2>
+          <select
+            value={pythCoin}
+            onChange={(e) => setPythCoin(e.target.value)}
+            className="w-full border border-gray-400 rounded-lg p-2 outline-none"
+          >
+            {PYTH_COINS.map((coin) => (
+              <option key={coin} value={coin}>
+                {coin.charAt(0).toUpperCase() + coin.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {loading && <p>Loading prices...</p>}
@@ -164,17 +209,11 @@ export default function OracleComparison() {
       )}
 
       {/* --- HISTORICAL CHART --- */}
-      {/* <History
-        redstoneCoin={redstoneCoin}
-        pythCoin={pythCoin}
-      /> */}
-          <History
-          chainlinkCoin={chainlinkCoin}
-
-  redstoneCoin={SYMBOL_MAP[redstoneCoin] || redstoneCoin.toUpperCase()}
-  pythCoin={SYMBOL_MAP[pythCoin] || pythCoin.toUpperCase()}
-/>
-
+      <History
+        chainlinkCoin={chainlinkCoin}
+        redstoneCoin={SYMBOL_MAP[redstoneCoin] || redstoneCoin.toUpperCase()}
+        pythCoin={SYMBOL_MAP[pythCoin] || pythCoin.toUpperCase()}
+      />
     </div>
   );
 }
