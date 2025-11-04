@@ -6,6 +6,7 @@ const COINGECKO_API = "https://api.coingecko.com/api/v3";
 const REDSTONE_API = "https://api.redstone.finance/prices";
 const PYTH_API = "https://hermes.pyth.network/v2";
 
+// ✅ Full Coin List (CoinGecko IDs)
 const COINS = [
   "bitcoin", "ethereum", "solana", "litecoin", "cardano",
   "polkadot", "binancecoin", "ripple", "matic-network", "dogecoin",
@@ -15,12 +16,39 @@ const COINS = [
   "the-graph", "aave", "synthetix-network-token", "pancakeswap-token", "uniswap"
 ];
 
-const SYMBOLS = [
-  "BTC", "ETH", "SOL", "LTC", "ADA", "DOT", "BNB", "XRP",
-  "MATIC", "DOGE", "SHIB", "AVAX", "LINK", "XLM", "TRX",
-  "VET", "FIL", "ATOM", "ALGO", "ICP", "APT", "ARB", "OP",
-  "SUI", "HBAR", "GRT", "AAVE", "SNX", "CAKE", "UNI"
-];
+// ✅ Clean Symbol Map (for 1:1 comparison)
+const SYMBOL_MAP: Record<string, string> = {
+  "bitcoin": "BTC",
+  "ethereum": "ETH",
+  "solana": "SOL",
+  "litecoin": "LTC",
+  "cardano": "ADA",
+  "polkadot": "DOT",
+  "binancecoin": "BNB",
+  "ripple": "XRP",
+  "matic-network": "MATIC",
+  "dogecoin": "DOGE",
+  "shiba-inu": "SHIB",
+  "avalanche-2": "AVAX",
+  "chainlink": "LINK",
+  "stellar": "XLM",
+  "tron": "TRX",
+  "vechain": "VET",
+  "filecoin": "FIL",
+  "cosmos": "ATOM",
+  "algorand": "ALGO",
+  "internet-computer": "ICP",
+  "aptos": "APT",
+  "arbitrum": "ARB",
+  "optimism": "OP",
+  "sui": "SUI",
+  "hedera-hashgraph": "HBAR",
+  "the-graph": "GRT",
+  "aave": "AAVE",
+  "synthetix-network-token": "SNX",
+  "pancakeswap-token": "CAKE",
+  "uniswap": "UNI",
+};
 
 export default function OracleComparison() {
   const [chainlinkCoin, setChainlinkCoin] = useState("bitcoin");
@@ -30,7 +58,7 @@ export default function OracleComparison() {
   const [prices, setPrices] = useState<{ chainlink?: number; redstone?: number; pyth?: number }>({});
   const [loading, setLoading] = useState(false);
 
-  // --- Fetch Real-Time Prices ---
+  // ✅ Fetch Real-Time Prices
   const fetchPrices = async () => {
     setLoading(true);
     try {
@@ -40,17 +68,17 @@ export default function OracleComparison() {
       const chainlinkPrice = clJson[chainlinkCoin]?.usd ?? undefined;
 
       // --- RedStone ---
-      const redSym = SYMBOLS[COINS.indexOf(redstoneCoin)] || "ETH";
+      const redSym = SYMBOL_MAP[redstoneCoin] || "ETH";
       const rsRes = await fetch(`${REDSTONE_API}?symbols=${redSym}`);
       const rsJson = await rsRes.json();
       const redstonePrice = rsJson[redSym]?.value ?? undefined;
 
       // --- Pyth ---
-      const pythSym = SYMBOLS[COINS.indexOf(pythCoin)] || "SOL";
+      const pythSym = SYMBOL_MAP[pythCoin] || "SOL";
       const feedsRes = await fetch(`${PYTH_API}/price_feeds`);
       const feeds = await feedsRes.json();
 
-      // Match feed symbol by “SYM/USD”
+      // Match feed symbol by “SYM/USD” or “SYMUSD”
       const selectedFeed = feeds.find((f: any) => {
         const sym = f.attributes?.display_symbol?.toUpperCase?.();
         return sym === `${pythSym}/USD` || sym === `${pythSym}USD`;
@@ -74,7 +102,7 @@ export default function OracleComparison() {
     }
   };
 
-  // --- Auto-refresh every minute ---
+  // ✅ Auto-refresh every minute
   useEffect(() => {
     fetchPrices();
     const interval = setInterval(fetchPrices, 60000);
@@ -136,11 +164,17 @@ export default function OracleComparison() {
       )}
 
       {/* --- HISTORICAL CHART --- */}
-      <History
-        chainlinkCoin={chainlinkCoin}
+      {/* <History
         redstoneCoin={redstoneCoin}
         pythCoin={pythCoin}
-      />
+      /> */}
+          <History
+          chainlinkCoin={chainlinkCoin}
+
+  redstoneCoin={SYMBOL_MAP[redstoneCoin] || redstoneCoin.toUpperCase()}
+  pythCoin={SYMBOL_MAP[pythCoin] || pythCoin.toUpperCase()}
+/>
+
     </div>
   );
 }
